@@ -2186,7 +2186,7 @@ html[lang="en"] .pick,
 html[lang="fa"] :is(.prose p, .people__lede p, .list li, .benefit p, .slabs__uses-intro, .about__text p) {
   --fa-space-min: 0.55;
   --fa-space-target: 1;
-  --fa-space-max: 2;
+  --fa-space-max: 3;
   font-kerning: normal;
   font-stretch: normal;
   letter-spacing: 0;
@@ -2204,8 +2204,21 @@ html[lang="fa"] .fa-composed { text-align: right; }
   text-align: start;
   text-align-last: start;
   text-justify: none;
-  white-space: normal;
+  white-space: nowrap;
+  text-wrap: nowrap;
   letter-spacing: 0;
   margin: 0;
   padding: 0;
 }
+
+/* No forced empty tails inside a paragraph. Native whole-paragraph fallback
+   keeps every non-final line justified instead of displaying short spans. */
+html[lang="fa"] .fa-native-justify {
+  text-align: justify;
+  text-align-last: right;
+  text-justify: inter-word;
+  text-wrap: pretty !important;
+  letter-spacing: 0;
+  font-feature-settings: "jalt" 0;
+}
+
