@@ -564,9 +564,6 @@ ${
       </a>
 
       <div class="bar__end">
-        <button class="chip chip--contents" type="button" data-contents-open hidden>
-          <span class="icon icon--list" aria-hidden="true"></span><span class="chip__label">${esc(site.contents)}</span>
-        </button>
         <a class="chip" href="${root}products/${wide ? "wide/" : ""}${lang === "en" ? "en/" : ""}"
            aria-label="${esc(site.productsLabel)}">${esc(site.products)}</a>
         <a class="chip" href="${build.view}" data-view-swap
@@ -581,8 +578,6 @@ ${
 
     <span class="progress" aria-hidden="true"></span>
   </header>
-
-${contents(ctx)}
 
 ${lightbox(ctx)}
 

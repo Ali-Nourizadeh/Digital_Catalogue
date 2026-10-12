@@ -267,39 +267,32 @@
 // Progressive, font-measured Persian composition; no runtime library.
 if (document.documentElement.lang === "fa") import("./persian-layout.js").catch(() => {});
 
-/* Contextual mobile return: safe direct destinations, never arbitrary history. */
+/* Mobile back: no button on either main page; history first, listing fallback. */
 (function () {
   "use strict";
-  var fa = document.documentElement.lang === "fa";
-  var form = document.querySelector("[data-filters]");
-  var listing = document.querySelector(".card__back");
-  var link = document.createElement("a");
-  link.className = "mobile-return";
-  var label = form ? (fa ? "بازگشت به فیلترها" : "Back to filters")
-    : listing ? (fa ? "همه سنگ‌ها" : "All stones")
-    : (fa ? "ابتدای کاتالوگ" : "Catalogue start");
-  link.href = listing ? listing.href : form ? "#q" : "#top";
-  link.setAttribute("aria-label", label);
-  link.title = label;
-  link.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg><span></span>';
-  link.querySelector("span").textContent = label;
-  document.body.appendChild(link);
-  if (listing) return; // native link works even when opened directly from a QR code
-  link.addEventListener("click", function (event) {
-    event.preventDefault();
-    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var behavior = reduced ? "auto" : "smooth";
-    var track = document.querySelector(".track");
-    if (form) {
-      form.scrollIntoView({ behavior: behavior, block: "start", inline: "start" });
-      // Avoid raising the phone keyboard merely to navigate back.
-      form.tabIndex = -1;
-      form.focus({ preventScroll: true });
-    } else {
-      if (track) track.scrollTo({ left: 0, behavior: behavior });
-      window.scrollTo({ top: 0, behavior: behavior });
-      var logo = document.querySelector(".bar__logo");
-      if (logo) logo.focus({ preventScroll: true });
+  // All language and layout variants of the two main pages are excluded.
+  if (document.querySelector("[data-filters]") || document.querySelector("#cover")) return;
+  var bar = document.querySelector(".bar__inner");
+  if (!bar || document.querySelector(".mobile-back")) return;
+  var fallback = document.querySelector(".card__back");
+  if (!fallback) return;
+  var back = document.createElement("a");
+  back.className = "chip mobile-back";
+  back.href = fallback.href;
+  var label = document.documentElement.lang === "fa" ? "بازگشت" : "Go back";
+  back.setAttribute("aria-label", label);
+  back.title = label;
+  back.innerHTML = '<span class="icon icon--to-left" aria-hidden="true"></span>';
+  bar.appendChild(back);
+  document.body.classList.add("has-mobile-back");
+  back.addEventListener("click", function (event) {
+    // Modified clicks retain the ordinary, safe listing URL.
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    var canGoBack = window.navigation && typeof window.navigation.canGoBack === "boolean"
+      ? window.navigation.canGoBack : window.history.length > 1;
+    if (canGoBack) {
+      event.preventDefault();
+      window.history.back();
     }
   });
 })();

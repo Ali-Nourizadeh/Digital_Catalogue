@@ -2259,38 +2259,62 @@ html::-webkit-scrollbar-button, .track::-webkit-scrollbar-button, .doc::-webkit-
   html, .track, .doc { scrollbar-width: auto !important; scrollbar-color: auto !important; }
 }
 
-/* The preview arrows follow RTL reading order; only the icons are mirrored. */
+/* Mirror only the viewer icons in RTL, never the previous/next actions. */
 html[dir="rtl"] [data-lb-step] svg { transform: scaleX(-1); }
 
-.mobile-return { display: none; }
+/* Mobile-only navigation uses the existing .chip face, palette and focus stroke.
+   Its physical top-left position and top-right notch are intentional in both languages. */
+.mobile-back { display: none; }
 @media (max-width: 59.9375rem) {
-  .mobile-return {
-    position: fixed;
-    z-index: 40;
-    inset-inline-end: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
-    inset-block-end: calc(1rem + env(safe-area-inset-bottom));
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-block-size: 3rem;
-    min-inline-size: 3rem;
-    padding: 0.65rem 1rem;
-    border: 1px solid rgb(255 255 255 / 0.35);
-    border-radius: 0.5rem;
-    background: var(--print-green, #19503c);
-    color: #fff;
-    font: inherit;
-    font-size: 0.875rem;
-    line-height: 1.4;
-    text-decoration: none;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  .has-mobile-back .bar__inner {
+    padding-left: calc(var(--space-4) + var(--space-8) + var(--space-3) + var(--space-2));
+    padding-right: var(--space-4);
+    gap: var(--space-2);
   }
-  .mobile-return svg { width: 1.25rem; height: 1.25rem; flex: none; }
-  html[dir="rtl"] .mobile-return svg { transform: scaleX(-1); }
-  .mobile-return:focus-visible { outline: 2px solid #fff; outline-offset: -5px; }
-  body:has(.mobile-return) .back-to-filters { display: none; }
-  .intro__body, .foot { padding-block-end: calc(5rem + env(safe-area-inset-bottom)); }
-  .page--stone main { padding-block-end: calc(5rem + env(safe-area-inset-bottom)); }
-  body:has(dialog[open]) .mobile-return { visibility: hidden; }
+  .bar .mobile-back {
+    position: fixed;
+    left: max(var(--space-4), env(safe-area-inset-left));
+    top: calc((var(--bar-h) - var(--space-8) - var(--space-3)) / 2);
+    z-index: var(--z-sticky);
+    display: inline-flex;
+    inline-size: calc(var(--space-8) + var(--space-3));
+    block-size: calc(var(--space-8) + var(--space-3));
+    min-block-size: calc(var(--space-8) + var(--space-3));
+    padding: 0;
+    border-radius: var(--radius);
+    box-shadow: none;
+    clip-path: none;
+    background-color: transparent;
+  }
+  html[dir] .bar .mobile-back::after {
+    content: "";
+    position: absolute;
+    inset: calc(var(--space-3) / 2) 0;
+    z-index: -2;
+    background-color: var(--rule-strong);
+    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+  }
+  html[dir] .bar .mobile-back::before {
+    inset: calc(var(--space-3) / 2 + var(--stroke)) var(--stroke);
+    clip-path: polygon(0 0, calc(100% - var(--notch) + var(--stroke)) 0,
+      100% calc(var(--notch) - var(--stroke)), 100% 100%, 0 100%);
+  }
+  .bar .mobile-back:hover, .bar .mobile-back:focus-visible { background-color: transparent; }
+  html[dir] .bar .mobile-back:hover::after,
+  html[dir] .bar .mobile-back:focus-visible::after { background-color: var(--print-green); }
+  .mobile-back .icon { inline-size: var(--space-5); block-size: var(--space-5); }
+  .back-to-filters { display: none; }
+  body:has(dialog[open]) .mobile-back { visibility: hidden; }
+}
+@media (max-width: 22.5rem) {
+  .has-mobile-back .bar__end { gap: var(--space-1); }
+  .has-mobile-back .bar .chip:not(.mobile-back) { padding-inline: var(--space-2); }
+  .has-mobile-back .bar__logo { padding-inline-end: 0; }
+}
+
+@media (max-width: 22.5rem) {
+  html[lang="en"] .has-mobile-back .bar .chip:not(.mobile-back) {
+    padding-inline: var(--space-1);
+    letter-spacing: normal;
+  }
 }
