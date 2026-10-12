@@ -570,7 +570,7 @@ ${hero(page)}
       <form class="filters" role="search" data-filters data-lang="${lang}" onsubmit="return false">
         <div class="shell filters__inner">
           <div class="filters__search reveal" style="--i:0">
-            ${mode === "wide" ? `<div class="filters__heading"><label class="filters__label" for="q">${t.search}</label><p class="filters__count" aria-live="polite" aria-atomic="true" data-total>${t.stones(productsFor(lang).length)}</p></div>` : `<label class="filters__label" for="q">${t.search}</label>`}
+            <div class="filters__heading"><label class="filters__label" for="q">${t.search}</label><p class="filters__count" aria-live="polite" aria-atomic="true" data-total>${t.stones(productsFor(lang).length)}</p></div>
             <div class="search">
               <span class="icon icon--search search__icon" aria-hidden="true"></span>
               <input class="search__input" id="q" name="q" type="search" autocomplete="off" spellcheck="false"
@@ -603,7 +603,6 @@ ${chips("colour", COLOURS, t.colours, true)}
           </div>
 
           <div class="filters__status reveal" style="--i:4">
-${mode !== "wide" ? `            <p class="filters__count" aria-live="polite" aria-atomic="true" data-total>${t.stones(productsFor(lang).length)}</p>` : ""}
             <button class="filters__clear" type="button" data-clear hidden>${t.clear}</button>
           </div>
         </div>
