@@ -2090,3 +2090,35 @@ html:not(.has-lightbox) .lb-open {
     transform: none;
   }
 }
+
+/* Compact toolbar controls. Touch targets retain their full height on
+   coarse pointers; desktop controls need not look like mobile buttons. */
+.bar .chip {
+  min-block-size: 2rem;
+  padding-block: 0.375rem;
+  line-height: 1.25;
+}
+@media (pointer: coarse) {
+  .bar .chip { min-block-size: 2.75rem; }
+}
+
+/* Persian joins must stay intact. Full justification necessarily distributes
+   spare width between words; start alignment avoids those rivers without
+   inserting tatweel, stretching glyphs, or breaking connected letters.
+   Pretty wrapping improves the final line where the browser supports it. */
+html[lang="fa"] .prose p,
+html[lang="fa"] .people__lede p,
+html[lang="fa"] .list li,
+html[lang="fa"] .benefit p,
+html[lang="fa"] .slabs__uses-intro {
+  text-align: start;
+  text-align-last: start;
+  text-justify: none;
+  text-wrap: pretty;
+  letter-spacing: 0;
+  word-spacing: normal;
+  line-height: 1.55;
+  hyphens: none;
+  overflow-wrap: normal;
+  word-break: normal;
+}
