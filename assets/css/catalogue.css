@@ -2258,3 +2258,39 @@ html::-webkit-scrollbar-button, .track::-webkit-scrollbar-button, .doc::-webkit-
 @supports selector(::-webkit-scrollbar) {
   html, .track, .doc { scrollbar-width: auto !important; scrollbar-color: auto !important; }
 }
+
+/* The preview arrows follow RTL reading order; only the icons are mirrored. */
+html[dir="rtl"] [data-lb-step] svg { transform: scaleX(-1); }
+
+.mobile-return { display: none; }
+@media (max-width: 59.9375rem) {
+  .mobile-return {
+    position: fixed;
+    z-index: 40;
+    inset-inline-end: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+    inset-block-end: calc(1rem + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-block-size: 3rem;
+    min-inline-size: 3rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid rgb(255 255 255 / 0.35);
+    border-radius: 0.5rem;
+    background: var(--print-green, #19503c);
+    color: #fff;
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  }
+  .mobile-return svg { width: 1.25rem; height: 1.25rem; flex: none; }
+  html[dir="rtl"] .mobile-return svg { transform: scaleX(-1); }
+  .mobile-return:focus-visible { outline: 2px solid #fff; outline-offset: -5px; }
+  body:has(.mobile-return) .back-to-filters { display: none; }
+  .intro__body, .foot { padding-block-end: calc(5rem + env(safe-area-inset-bottom)); }
+  .page--stone main { padding-block-end: calc(5rem + env(safe-area-inset-bottom)); }
+  body:has(dialog[open]) .mobile-return { visibility: hidden; }
+}
