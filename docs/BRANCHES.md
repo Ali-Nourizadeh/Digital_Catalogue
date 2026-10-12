@@ -4,7 +4,7 @@
 
 main owns the complete site, data and build scripts. Catalogue landing pages remain at the root. All current product listing/detail variants live under products/. Both product build scripts target products/, never the root catalogue pages.
 
-Deployment is main-only through deploy-pages.yml. The legacy publish.yml workflow no longer copies between branches. Source branches kept for archive must not be used to publish.
+Deployment transition is pending Workflows write permission. Content/builds are consolidated on main; the live site currently still publishes from Behkooshan-catalogue with the updated CSS. The planned main-only deploy-pages.yml and retired publish.yml are prepared but were not committed because workflow edits returned 403. Do not delete the previous publishing branches until this transition is verified.
 
 ## Completed PRs
 

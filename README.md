@@ -28,7 +28,7 @@ Generated HTML is committed. Edit data/templates rather than generated pages. No
 
 ## Publication
 
-`.github/workflows/deploy-pages.yml` deploys **main only**. The old product-copy workflow is retired; do not publish from the former competing branches. There is no longer a cross-branch product sync to race with Pages.
+**Migration status:** site content and both builds are consolidated on main, but changing GitHub workflow files was denied by the current token. Pages currently still deploys from Behkooshan-catalogue, and its published CSS has been updated and verified. Workflows write permission is needed to switch deploy-pages.yml to main and retire the product-copy workflow. Do not delete those historical source branches until this transition succeeds.
 
 ## Branches and pull requests
 
