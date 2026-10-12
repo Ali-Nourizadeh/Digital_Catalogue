@@ -263,3 +263,6 @@
   setUpWarm();
   setUpToStart();
 })();
+
+// Progressive, font-measured Persian composition; no runtime library.
+if (document.documentElement.lang === "fa") import("./persian-layout.js").catch(() => {});
