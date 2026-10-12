@@ -2468,57 +2468,36 @@ html::-webkit-scrollbar-button, .track::-webkit-scrollbar-button, .doc::-webkit-
 /* Mirror only the viewer icons in RTL, never the previous/next actions. */
 html[dir="rtl"] [data-lb-step] svg { transform: scaleX(-1); }
 
-/* Mobile-only navigation uses the existing .chip face, palette and focus stroke.
-   Its physical top-left position and top-right notch are intentional in both languages. */
-.mobile-back { display: none; }
+/* Mobile back occupies a layout slot; its actual face is the unmodified header .chip. */
+.mobile-back-slot { display: none; }
 @media (max-width: 59.9375rem) {
   .has-mobile-back .bar__inner {
     padding-left: calc(var(--space-4) + var(--space-8) + var(--space-3) + var(--space-2));
     padding-right: var(--space-4);
     gap: var(--space-2);
   }
-  .bar .mobile-back {
+  .mobile-back-slot {
     position: fixed;
     left: max(var(--space-4), env(safe-area-inset-left));
     top: calc((var(--bar-h) - var(--space-8) - var(--space-3)) / 2);
     z-index: var(--z-sticky);
-    display: inline-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     inline-size: calc(var(--space-8) + var(--space-3));
     block-size: calc(var(--space-8) + var(--space-3));
-    min-block-size: calc(var(--space-8) + var(--space-3));
-    padding: 0;
-    border-radius: var(--radius);
-    box-shadow: none;
-    clip-path: none;
-    background-color: transparent;
   }
-  html[dir] .bar .mobile-back::after {
-    content: "";
-    position: absolute;
-    inset: calc(var(--space-3) / 2) 0;
-    z-index: -2;
-    background-color: var(--rule-strong);
-    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+  .bar .mobile-back {
+    inline-size: calc(var(--space-8) + var(--space-3));
+    padding-inline: 0;
   }
-  html[dir] .bar .mobile-back::before {
-    inset: calc(var(--space-3) / 2 + var(--stroke)) var(--stroke);
-    clip-path: polygon(0 0, calc(100% - var(--notch) + var(--stroke)) 0,
-      100% calc(var(--notch) - var(--stroke)), 100% 100%, 0 100%);
-  }
-  .bar .mobile-back:hover, .bar .mobile-back:focus-visible { background-color: transparent; }
-  html[dir] .bar .mobile-back:hover::after,
-  html[dir] .bar .mobile-back:focus-visible::after { background-color: var(--print-green); }
   .mobile-back .icon { inline-size: var(--space-5); block-size: var(--space-5); }
-  .back-to-filters { display: none; }
-  body:has(dialog[open]) .mobile-back { visibility: hidden; }
+  body:has(dialog[open]) .mobile-back-slot { visibility: hidden; }
 }
 @media (max-width: 22.5rem) {
   .has-mobile-back .bar__end { gap: var(--space-1); }
   .has-mobile-back .bar .chip:not(.mobile-back) { padding-inline: var(--space-2); }
   .has-mobile-back .bar__logo { padding-inline-end: 0; }
-}
-
-@media (max-width: 22.5rem) {
   html[lang="en"] .has-mobile-back .bar .chip:not(.mobile-back) {
     padding-inline: var(--space-1);
     letter-spacing: normal;

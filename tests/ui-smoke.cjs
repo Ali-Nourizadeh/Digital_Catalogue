@@ -29,6 +29,23 @@ const cp=require('node:child_process');
     assert.equal(await page.locator('.stone:not([hidden])').count(),0);
     await page.locator('[data-filters] [data-clear]').click({force:true});await page.waitForTimeout(60);
     assert.equal(await page.locator('.stone:not([hidden])').count(),99);
+    await page.locator('[data-type="granite"].pick').click({force:true});
+    await page.waitForTimeout(350); // wide deck finishes repagination after filtering
+    const before=await page.locator('[data-total]').innerText();
+    await page.evaluate(()=>{
+      const track=document.querySelector('.track');
+      if(track&&getComputedStyle(track).overflowX!=='visible'&&track.scrollWidth>track.clientWidth){
+        track.scrollLeft=(document.dir==='rtl'?-1:1)*(document.querySelector('.intro').offsetWidth+innerWidth/2);
+      }else window.scrollTo(0,document.querySelector('[data-filters]').getBoundingClientRect().bottom+scrollY+innerHeight);
+    });
+    await page.waitForFunction(()=>document.querySelector('.back-to-filters').classList.contains('is-shown'));
+    assert.ok(await page.locator('.back-to-filters').isVisible());
+    await page.locator('.back-to-filters').click();await page.waitForTimeout(120);
+    const q=await page.locator('#q').boundingBox();
+    assert.ok(q.x>=-1&&q.x+q.width<=size.width+1&&q.y>=0&&q.y<size.height,'filters return: '+route);
+    assert.equal(await page.locator('[data-type="granite"].pick').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-total]').innerText(),before,'return must preserve filters');
+
    }
    total++;results.push(`${size.width}x${size.height} ${route}`);
   }
