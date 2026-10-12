@@ -2377,7 +2377,7 @@ html[lang="en"] .pick,
 html[lang="fa"] :is(.prose p, .people__lede p, .list li, .benefit p, .slabs__uses-intro, .about__text p) {
   --fa-space-min: 0.55;
   --fa-space-target: 1;
-  --fa-space-max: 2;
+  --fa-space-max: 3;
   font-kerning: normal;
   font-stretch: normal;
   letter-spacing: 0;
@@ -2395,8 +2395,36 @@ html[lang="fa"] .fa-composed { text-align: right; }
   text-align: start;
   text-align-last: start;
   text-justify: none;
-  white-space: normal;
+  white-space: nowrap;
+  text-wrap: nowrap;
   letter-spacing: 0;
   margin: 0;
   padding: 0;
 }
+
+/* No forced empty tails inside a paragraph. Native whole-paragraph fallback
+   keeps every non-final line justified instead of displaying short spans. */
+html[lang="fa"] .fa-native-justify {
+  text-align: justify;
+  text-align-last: right;
+  text-justify: inter-word;
+  text-wrap: pretty !important;
+  letter-spacing: 0;
+  font-feature-settings: "jalt" 0;
+}
+
+/* Dense filter rhythm: 6 px desktop row gaps, and no extra row gap on
+   touch. Touch hit targets stay 44 px; visible 32 px faces remain 12 px apart. */
+.filters__inner { gap: 0.5rem; padding-block: 0.75rem 1rem; }
+.facets { gap: 0.375rem; }
+.facet__picks { row-gap: 0.375rem; column-gap: 0.5rem; }
+.facet .filters__label { padding-block-start: 4px; }
+@media (pointer: coarse) {
+  .facets { gap: 0; }
+  .facet__picks { row-gap: 0; }
+}
+
+.source-note { margin-block-start: 0.75rem; font-size: 0.875rem; line-height: 1.5; color: var(--ink-muted); }
+.source-note a { color: var(--print-green); text-underline-offset: 0.2em; }
+.source-note span { display: block; margin-block-start: 0.25rem; }
+
