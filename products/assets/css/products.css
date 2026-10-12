@@ -1365,25 +1365,22 @@ html[lang="en"] .filters__count {
   color: var(--print-green);
 }
 
-/* Across a laptop the four sit in one band: the name and the count on the
-   first line, the three rows of choices side by side under them. */
+/* Search and its total share a full-width row at every viewport size.
+   Clear filters stays on its own row rather than taking half the search width. */
 @media (min-width: 64rem) {
   .filters__inner {
-    grid-template-columns: minmax(18rem, 30rem) minmax(0, 1fr);
-    grid-template-areas:
-      "search status"
-      "facets facets";
-    align-items: end;
-    column-gap: var(--space-12);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: none;
+    align-items: stretch;
   }
 
-  .filters__search { grid-area: search; }
-  .facets { grid-area: facets; }
+  .filters__search,
+  .facets { grid-area: auto; }
 
   .filters__status {
-    grid-area: status;
+    grid-area: auto;
     justify-content: flex-end;
-    min-block-size: 3rem;
+    min-block-size: 0;
   }
 
   .facets {
@@ -2328,14 +2325,24 @@ html[lang="fa"] .about__text p {
 /* Taste-guided targeted refinement: preserve brand, tune optical alignment.
    Rokh's ink sits high in its line box, so offset its content by 2 px.
    Latin is shifted 1 px, independently of the Persian font metrics. */
-.bar .chip, .pick {
+.bar .chip {
   --optical-offset: 2px;
   padding-block: calc(0.375rem + var(--optical-offset)) calc(0.375rem - var(--optical-offset));
 }
 html[lang="en"] .bar .chip,
-html[lang="en"] .pick,
 .bar .chip[lang="en"] { --optical-offset: 1px; }
 .bar .chip[lang="fa"] { --optical-offset: 2px; }
+
+/* Keep the swatch at the geometric centre; only the text gets its
+   one-pixel optical font correction, not the whole button contents. */
+.pick {
+  justify-content: center;
+  padding-block: calc(var(--space-3) / 2);
+}
+.pick__label {
+  display: block;
+  transform: translateY(var(--hairline));
+}
 
 /* A 32 px visible face within a real 44 px touch target, not a tiny mobile
    control. Pseudo layers keep the same brand cut corner and focus stroke. */

@@ -478,7 +478,7 @@ function chips(group, values, labels, withSwatch = false) {
     .map(
       (v) => `              <button class="pick${withSwatch ? " pick--colour" : ""}" type="button" data-${group}="${v}" aria-pressed="false">${
         withSwatch ? `<span class="pick__swatch pick__swatch--${v}" aria-hidden="true"></span>` : ""
-      }${labels[v]}</button>`
+      }<span class="pick__label">${labels[v]}</span></button>`
     )
     .join("\n");
 }
