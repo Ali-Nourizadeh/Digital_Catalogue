@@ -1,0 +1,337 @@
+{
+  "block-yard-crane": {
+    "focus": "50% 50%",
+    "height": 1067,
+    "source": "factory 1.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "counter-dark-green-sink": {
+    "focus": "50% 55%",
+    "height": 1475,
+    "source": "Black Tempest kitchen (1).jpg.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "driller-at-face": {
+    "focus": "50% 50%",
+    "height": 960,
+    "source": "IMG_0960.webp",
+    "width": 1280,
+    "widths": [
+      400,
+      800,
+      1280
+    ]
+  },
+  "factory-multiwire-blades": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "factory 2.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "factory-multiwire-hall": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "factory 6.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "granite-bathroom-vanity": {
+    "focus": "50% 58%",
+    "height": 1400,
+    "source": "IMG_2404.JPG.webp",
+    "width": 1287,
+    "widths": [
+      640,
+      1024,
+      1287
+    ]
+  },
+  "granite-shower-wall": {
+    "focus": "50% 50%",
+    "height": 1671,
+    "source": "IMG_2405.JPG.webp",
+    "width": 1536,
+    "widths": [
+      640,
+      1024,
+      1536
+    ]
+  },
+  "granite-slab-display": {
+    "focus": "50% 42%",
+    "height": 1000,
+    "source": "1.webp",
+    "width": 562,
+    "widths": [
+      562
+    ]
+  },
+  "kitchen-black-terrazzo": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "6a0179fd2365e.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "kitchen-black-white-island": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "3.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "kitchen-dark-veined": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "6a0182f426f18.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "kitchen-grey-granite": {
+    "focus": "50% 50%",
+    "height": 1411,
+    "source": "0-7a.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "kitchen-silver-vein-island": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "6.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "loader-carrying-block": {
+    "focus": "55% 55%",
+    "height": 1067,
+    "source": "madan 5.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "lounge-green-panel": {
+    "focus": "50% 50%",
+    "height": 1411,
+    "source": "1 tif.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "multiwire-cutting": {
+    "focus": "50% 50%",
+    "height": 1104,
+    "source": "factory 4.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "portrait-mohammadi": {
+    "focus": "50% 26%",
+    "height": 945,
+    "source": "portrait-mohammadi.webp",
+    "width": 756,
+    "widths": [
+      400,
+      756
+    ]
+  },
+  "portrait-naseri-zadeh": {
+    "focus": "50% 22%",
+    "height": 1332,
+    "source": "IMG_8649.webp",
+    "width": 1020,
+    "widths": [
+      400,
+      800,
+      1020
+    ]
+  },
+  "portrait-pedram": {
+    "focus": "50% 26%",
+    "height": 614,
+    "source": "IMG_8647.webp",
+    "width": 496,
+    "widths": [
+      400,
+      496
+    ]
+  },
+  "portrait-tannaz": {
+    "focus": "50% 24%",
+    "height": 1502,
+    "source": "IMG_7865.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "powder-room-grey-stone": {
+    "focus": "50% 42%",
+    "height": 3072,
+    "source": "1 (2).webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "quarry-aerial-pool": {
+    "focus": "50% 42%",
+    "height": 1600,
+    "source": "444.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "quarry-excavators": {
+    "focus": "50% 60%",
+    "height": 1067,
+    "source": "madan 6a.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "quarry-fluted-face": {
+    "focus": "50% 50%",
+    "height": 1067,
+    "source": "madan 2a.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "quarry-loader-wall": {
+    "focus": "50% 62%",
+    "height": 1365,
+    "source": "madan 1.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "quarry-valley": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "madan 3-b.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "quarry-white-cut": {
+    "focus": "50% 50%",
+    "height": 1365,
+    "source": "madan 11.webp",
+    "width": 2048,
+    "widths": [
+      960,
+      1440,
+      2048
+    ]
+  },
+  "quartzite-block-display": {
+    "focus": "50% 42%",
+    "height": 1350,
+    "source": "111.webp",
+    "width": 1080,
+    "widths": [
+      640,
+      1024,
+      1080
+    ]
+  },
+  "quartzite-countertop-edge": {
+    "focus": "50% 45%",
+    "height": 1000,
+    "source": "IMG_8821.webp",
+    "width": 800,
+    "widths": [
+      640,
+      800
+    ]
+  },
+  "quartzite-raw-blocks": {
+    "focus": "50% 50%",
+    "height": 1000,
+    "source": "IMG_8819.webp",
+    "width": 800,
+    "widths": [
+      640,
+      800
+    ]
+  },
+  "slab-storage-hall": {
+    "focus": "50% 50%",
+    "height": 1067,
+    "source": "factory 7.webp",
+    "width": 1600,
+    "widths": [
+      400,
+      800,
+      1600
+    ]
+  }
+}

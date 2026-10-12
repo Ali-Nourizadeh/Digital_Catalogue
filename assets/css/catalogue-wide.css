@@ -1,0 +1,2017 @@
+/* ==========================================================================
+   Behkooshan catalogue, read sideways
+
+   The second version. Same markup, same words, same photographs; the
+   document runs along the inline axis instead of down the block one, so the
+   Persian catalogue is read right to left and the English one left to right,
+   the way each language is read in the first place.
+
+   Everything here is an override of catalogue.css, and nothing in that file
+   knows about this one. Deleting this stylesheet, assets/js/catalogue-wide.js,
+   the wide/ directory and the two `wide` rows in tools/build-catalogue.mjs
+   removes the version completely. See docs/WIDE.md.
+
+   The file is in three blocks, and the order they are in is the order they
+   have to be in:
+
+     1. the track, which is what a sideways document is made of and is the
+        same on every screen;
+     2. the wide composition, where a panel is a printed spread;
+     3. the narrow composition, where a panel is a card and a phone held
+        upright swipes through them.
+
+   Two and three never both apply. Between them they cover everything inside
+   the gate on one; below that gate the page is the upright one, unchanged,
+   and the switch in the bar is not offered.
+   ========================================================================== */
+
+/* ==========================================================================
+   The track
+
+   Everything a sideways document needs whatever the screen is: the scroll
+   container, the panel, the frame around a panel, the reading line in the
+   bar and the two moves that have an axis. The compositions inside the
+   panels are the two blocks after this one.
+
+   The gate is small on purpose. What the sideways reading needs is a
+   viewport a whole composition fits in, and a phone held upright is one:
+   the panel is a card rather than a spread, and the cards are swiped
+   instead of scrolled. What it cannot use is a phone turned on its side,
+   where there are barely three hundred pixels of height to cut a panel to,
+   and that is what the height in the gate is keeping out.
+   ========================================================================== */
+
+/* The word on which way the track runs has no track to speak of below the
+   gate; the track block below brings it back. */
+.hint {
+  display: none;
+}
+
+@keyframes hint-on {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0.3rem 0; }
+}
+
+@keyframes hint-on-rtl {
+  0%, 100% { translate: 0 0; }
+  50% { translate: -0.3rem 0; }
+}
+
+@media (min-width: 20rem) and (min-height: 34rem) {
+  /* --- The scroller -------------------------------------------------------
+     The document itself is the scroller. Its flex row follows `dir`, so the
+     Persian build scrolls right to left with no extra work, and the browser
+     gives the scrollbar, the keyboard and the touch swipe for free. */
+
+  html,
+  body {
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  .doc {
+    /* The height every panel is cut to. Written down once, because a
+       percentage of a grid row the browser is still sizing resolves against
+       nothing and lets a figure grow past the panel. */
+    --panel-h: calc(100dvh - var(--bar-h));
+
+    /* The air above and below the type on every panel that carries any. One
+       value, used everywhere, so a reader travelling along the track finds
+       each panel beginning and ending on the same two lines. */
+    --panel-pad: clamp(2rem, 4.5vh, 3.5rem);
+
+    /* The gutter between columns of type, and between a column of type and
+       the photographs beside it. Also one value, for the same reason. */
+    --panel-gap: clamp(2rem, 3.2vw, 3.5rem);
+
+    display: flex;
+    align-items: stretch;
+    block-size: 100dvh;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline-start: 0;
+
+    /* No scroll snapping. The track is scrolled freely and panels are
+       aligned on purpose instead, by the contents and by Page Up and Page
+       Down: snapping spends its time tugging at a reader who is part way
+       between two panels and has not asked to be anywhere in particular. */
+  }
+
+  /* A section is a panel: one window wide, one window tall, and no padding
+     of its own, because the height it gets is all the height there is.
+
+     One window is the rule and not an approximation. A panel wider than the
+     window is never seen whole, so it stops being a composition and becomes
+     a stretch of scroll; everything below is laid out to fit the window it
+     is given rather than to ask for more. */
+  .sec {
+    --panel: 100vw;
+
+    flex: 0 0 auto;
+    display: grid;
+    /* One row, a definite fraction of a panel that is itself definite. Left
+       to size itself from its content, anything inside asking for a
+       percentage of it gets no answer. */
+    grid-template-rows: minmax(0, 1fr);
+    inline-size: var(--panel);
+    block-size: 100%;
+    padding-block: 0;
+    padding-inline: 0;
+    /* Clipped, not hidden. Both cut off what runs past the panel, but hidden
+       also makes the panel a scroll container of its own, and a snap point
+       belongs to its nearest scroll container: every card boundary drawn
+       inside a panel was snapping the panel, which never scrolls, instead of
+       the track, which does. It also let a focused link inside a clipped
+       column scroll the panel's contents sideways under the reader. Hidden
+       stays as the fallback for the few browsers that do not know clip. */
+    overflow: hidden;
+    overflow: clip;
+  }
+
+  .sec > * {
+    min-block-size: 0;
+  }
+
+  /* The shell inside a panel stops being a centred column: the panel is the
+     column, and its width is the measure. */
+  .sec > .shell {
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: 100%;
+    margin-inline: 0;
+  }
+
+  /* Every panel that carries type is framed the same way. The ones that are
+     a photograph edge to edge, or a title on a field of green, are not: they
+     are meant to run to the trim. */
+  .sec--columns > .shell,
+  .sec--slabs > .shell,
+  .sec--people > .shell,
+  .sec--stone > .shell {
+    padding-block: var(--panel-pad);
+  }
+
+  /* The page turn between two panels, which the upright version draws as a
+     hairline across the top of a section. */
+  .sec:not(.sec--plate, .sec--divider, .sec--cover) + .sec:not(.sec--plate, .sec--divider, .sec--cover)::before {
+    inset-block: var(--frame);
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    inline-size: var(--hairline);
+    block-size: auto;
+  }
+
+  /* Except before the two stones, which lead with their photographs. The
+     edge of a photograph is already where one panel stops and the next
+     begins; a rule beside it only stands in the white between them, a
+     second edge a few millimetres from the first. */
+  .sec:not(.sec--plate, .sec--divider, .sec--cover) + .sec.sec--stone::before {
+    content: none;
+  }
+
+  /* A photograph panel is the photograph, whatever the screen: the frame is
+     the panel and the crop is what the picture gives up to fill it. */
+  .plate {
+    block-size: 100%;
+  }
+
+  /* Just under one window keeps the edge of the next panel in view, which is
+     what tells a reader the document goes sideways. The plates are the right
+     place for it: a photograph is legible from any part of itself, so the
+     one panel that can afford not to start at the window edge is this one. */
+  .sec--plate {
+    --panel: 88vw;
+  }
+
+  /* --- The bar ------------------------------------------------------------
+     The reading line follows the track rather than the document, which is no
+     longer the thing that scrolls. */
+
+  @supports (animation-timeline: scroll()) and (timeline-scope: --page) {
+    html {
+      timeline-scope: --page;
+    }
+
+    .doc {
+      scroll-timeline: --page inline;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .progress {
+        animation-timeline: --page;
+      }
+    }
+  }
+
+  /* --- Cover -------------------------------------------------------------- */
+
+  .cover {
+    min-block-size: 0;
+    block-size: 100%;
+    padding-block: 0;
+    align-content: center;
+  }
+
+  /* The one panel that keeps the shell. Everywhere else the panel is the
+     column and its width is the measure; a title page is a composition, and
+     held against the edge of a window twice the width of a printed page its
+     mark reads as having slipped off rather than as having been placed. */
+  .sec--cover > .shell {
+    max-inline-size: var(--shell);
+    margin-inline: auto;
+  }
+
+  /* --- The way on ---------------------------------------------------------
+     The cover's word on which way the reading goes, in the corner it goes
+     towards: the arrow points along the track, and a press moves on a
+     screen, as the page keys do. The brand's outline tag, the same as the
+     chips in the bar, which reads on the white of the cover and on a
+     photograph alike. catalogue-wide.js shows it while the reader is on the
+     first screen, however they came back to it, and takes it away as soon
+     as they are on their way.
+
+     A hand or a wheel is told what to do with it: a screen that can hover
+     with a fine pointer has a wheel under it, anything else a finger. */
+  .hint {
+    position: fixed;
+    inset-block-end: max(var(--space-4), env(safe-area-inset-bottom));
+    inset-inline-end: var(--frame);
+    z-index: 20;
+    display: inline-flex;
+    gap: var(--space-3);
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 0.75rem;
+    transition: opacity 500ms var(--ease-out),
+                translate 800ms var(--ease-out),
+                visibility 0s linear 800ms,
+                background-color var(--dur-fast) linear,
+                color var(--dur-fast) linear;
+  }
+
+  .hint[hidden] {
+    display: none;
+  }
+
+  .hint.is-shown {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+    transition-delay: 0s;
+  }
+
+  .hint__wheel {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hint__wheel {
+      display: inline;
+    }
+
+    .hint__touch {
+      display: none;
+    }
+  }
+
+  .hint .icon {
+    inline-size: 1.125rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hint.is-shown .icon {
+      animation: hint-on 1800ms ease-in-out infinite;
+    }
+
+    html[dir="rtl"] .hint.is-shown .icon {
+      animation-name: hint-on-rtl;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hint {
+      translate: none;
+      transition: opacity 200ms linear, visibility 0s linear 200ms;
+    }
+  }
+
+  /* --- Motion -------------------------------------------------------------
+     The same four moves. Two of them have an axis, and it is the axis the
+     document runs on. The rtl rules are `html.js[dir="rtl"]` because the
+     class is on <html> itself: written `html[dir="rtl"] .js` they look for
+     it on a descendant, never find it, and leave the Persian document
+     moving the Latin way round. */
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js .reveal.is-out {
+      transform: translateX(var(--reveal-shift, 1.5rem));
+    }
+
+    html.js[dir="rtl"] .reveal.is-out {
+      transform: translateX(calc(var(--reveal-shift, 1.5rem) * -1));
+    }
+
+    .js .divider.is-out .divider__green {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    html.js[dir="rtl"] .divider.is-out .divider__green {
+      clip-path: inset(0 0 0 100%);
+    }
+  }
+
+  /* Drift reads the inline axis of the track and moves the photograph along
+     it. Progressive enhancement, as in the upright version: the photograph
+     is already in place and correctly framed without it. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .plate img,
+      .feature__figure img {
+        block-size: 100%;
+        /* Wider than the frame by exactly the distance it drifts, so it
+           covers the frame at both ends of the journey. The reset caps every
+           image at the width of its box, and left capped the photograph is
+           no wider than the frame, so every pixel it drifts uncovers a pixel
+           of the dark ground behind it: a strip down the edge of the panel
+           as it leaves. */
+        inline-size: 114%;
+        max-inline-size: none;
+        animation: drift-inline linear both;
+        animation-timeline: view(inline);
+        animation-range: cover 0% cover 100%;
+      }
+
+      html[dir="rtl"] .plate img,
+      html[dir="rtl"] .feature__figure img {
+        animation-name: drift-inline-rtl;
+      }
+    }
+  }
+}
+
+
+/* ==========================================================================
+   The wide composition
+   A panel is a printed spread: the window is wider than it is tall and
+   there is room across it for two things side by side.
+   ========================================================================== */
+
+@media (min-width: 60rem) and (min-height: 38rem) {
+  /* --- Divider ------------------------------------------------------------
+     The green half and the title half, side by side, filling the panel. */
+
+  .divider {
+    min-block-size: 0;
+    block-size: 100%;
+    grid-template-columns: 5fr 7fr;
+  }
+
+  /* Set where the reading starts, not in the middle of the field. A panel is
+     met all at once, and the eye goes first to the corner the language begins
+     in: the top right in Persian, the top left in English. A title standing
+     there is read before anything else on the panel; the same title in the
+     middle of the white is found rather than met, and the field around it
+     reads as a margin the type has drifted off the edge of.
+
+     Both of those are the start edge and the start of the block axis, so the
+     rule is one rule and each language mirrors it without being told to. The
+     white it leaves is under the title and away from the green, which is the
+     field a section opener is supposed to have: a printed one is four words
+     at the head of a page and the rest of the page is the pause after them.
+
+     The offset from the top is a share of the panel rather than a fixed
+     figure, so on a short window the title comes up with it. */
+  .divider__face {
+    padding-block: clamp(2.5rem, 13vh, 7rem) 0;
+    align-content: start;
+    justify-content: start;
+    justify-items: start;
+    max-inline-size: none;
+  }
+
+  /* The measure the title wraps on. Left to size itself against a panel this
+     wide, "دو نسل، یک میراث" comes out on one long line and stops being the
+     two line block the printed opener sets. The line under it is one short
+     phrase and takes no measure: given the title's, in its own smaller type,
+     it would break where the title breaks and read as a second title. */
+  .divider__title {
+    max-inline-size: 14ch;
+  }
+
+  html[lang="en"] .divider__title {
+    max-inline-size: 16ch;
+  }
+
+  /* --- Feature ------------------------------------------------------------
+     Photograph and type were already side by side. Here the photograph runs
+     the full height of the panel and the type takes the rest, so the split
+     falls on the panel's own middle rather than on the shell's. */
+
+  .feature {
+    block-size: 100%;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    /* Declared, as on every other panel. Left to size itself the row grows
+       to the taller of the photograph and the type, and the photograph,
+       asked to fill it, grows past the bottom of the panel with it. */
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .feature__figure {
+    block-size: 100%;
+    aspect-ratio: auto;
+    margin-inline-start: 0;
+  }
+
+  .feature__text {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    padding-block: var(--panel-pad);
+    padding-inline: clamp(2rem, 4vw, 4rem);
+  }
+
+  /* The measure, once, on every feature. The type is centred against a
+     photograph that runs the full height, so what makes these panels agree
+     with each other is the width of the column rather than where it starts.
+
+     Centred in its half rather than pushed against the photograph. Upright,
+     the type sits against the outer margin of the page and the photograph
+     bleeds off the other edge; sideways both edges of the half are margins,
+     and a block of type held against one of them leaves the panel lopsided. */
+  .feature__inner {
+    inline-size: 100%;
+    max-inline-size: 34rem;
+  }
+
+  .feature--flip {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+  }
+
+  .feature--flip .feature__figure {
+    margin-inline-end: 0;
+  }
+
+  /* The same frame either way round. Upright the flipped composition pads
+     its type against the outer margin of the page, which sideways is the
+     edge of the panel and no longer a margin at all. */
+  .feature--flip .feature__text {
+    padding-inline: clamp(2rem, 4vw, 4rem);
+  }
+
+  /* The lead composition put the photograph above a short block of type.
+     Inside a panel that is all height and no spare room it becomes the same
+     side by side split as the others, with the photograph given the larger
+     share because there is less type to carry. */
+  .feature--lead {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 0;
+  }
+
+  .feature--lead .feature__figure {
+    block-size: 100%;
+  }
+
+  .feature--lead .feature__text {
+    padding-inline: clamp(2rem, 4vw, 4rem);
+  }
+
+  .feature--lead .feature__inner {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: 30rem;
+    margin-inline: auto;
+  }
+
+  .feature--lead .feature__inner > * {
+    grid-column: auto;
+  }
+
+  /* --- Columns ------------------------------------------------------------
+     The advantages spread. Three columns of type across the top of the
+     panel, and the eight photographs beneath them as a band that takes
+     whatever height the type leaves.
+
+     Upright, the print runs these eight down the gutter between two columns
+     of text. Sideways there is no gutter to run down, and a band along the
+     foot of the panel is the same idea turned on its side: the type is the
+     spread and the photographs are the strip under it. */
+
+  .sec--columns > .shell {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    row-gap: clamp(1.75rem, 3.5vh, 2.75rem);
+  }
+
+  /* Three columns of text, set the way the slabs are: a run of writing
+     poured across them and balanced, rather than a grid with one block to a
+     column. The three blocks here are very different lengths, and a grid
+     makes all three as deep as the longest, which on this panel is the
+     difference between the type fitting the window and not. */
+  .columns__text {
+    display: block;
+    /* A width rather than a count, so the measure stays where it is set and
+       the number of columns is whatever the panel can hold at it. Three on a
+       window of ordinary width; four on a very wide one, or on the wider
+       panel a short window is given, where three would set the line half as
+       long again as it should be. */
+    column-width: 29rem;
+    column-gap: var(--panel-gap);
+    column-fill: balance;
+  }
+
+  .columns__block + .columns__block {
+    margin-block-start: var(--space-8);
+  }
+
+  /* A heading never ends a column and a bullet never straddles one. */
+  .columns__block .title {
+    break-after: avoid;
+  }
+
+  .columns__text li {
+    break-inside: avoid;
+  }
+
+  /* Four across and two down, filling the row rather than asking for a
+     height of their own. The row is what is left of the panel, so the band
+     closes the composition on the bottom frame line whatever the type does
+     above it and the panel is never part empty. */
+  .band {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    block-size: 100%;
+    margin-block-start: 0;
+  }
+
+  .band figure {
+    aspect-ratio: auto;
+    block-size: 100%;
+  }
+
+  /* --- People -------------------------------------------------------------
+     The arrangement the upright version uses, kept as it is: the green tag,
+     its lede under it, and the two lives side by side, each with a small
+     portrait against the outer edge and the name and the life beside it.
+
+     A panel is not a reason to redraw a composition that works. This one
+     keeps the page's own shell, so the measure and the portraits come out
+     the size they are upright, and the block sits in the middle of the
+     panel's height rather than being stretched to fill it. */
+
+  .sec--people > .shell {
+    display: grid;
+    align-content: center;
+    max-inline-size: var(--shell);
+    margin-inline: auto;
+  }
+
+  /* The banner is an inline block on a page, so it is as wide as its words.
+     A grid item stretches instead, and a tag drawn across the whole measure
+     stops being a tag. */
+  .sec--people .tag {
+    justify-self: start;
+  }
+
+  /* On a shorter window the shell has to go, and the air between the lede
+     and the lives with it. Keeping the page's own measure is what makes this
+     panel the upright composition, but a page can be any height and a panel
+     cannot: below this the two lives are taller than the panel, and what is
+     left to give them is the rest of its width. The arrangement does not
+     change, only the length of the line. */
+  @media (max-height: 56rem) {
+    .sec--people > .shell {
+      max-inline-size: none;
+    }
+
+    .people__list {
+      margin-block-start: clamp(1.75rem, 4vh, 3rem);
+    }
+  }
+
+  /* Except the twelve millimetre spread, which takes a narrower frame. It is
+     the one panel whose three parts have each to stand in a column of their
+     own, and the first of them has a depth it will not go under; measured,
+     the frame is worth about thirty five pixels of that and the panel has no
+     other thirty five to give. Print does the same thing: the spread with
+     the most words on it gets the tighter margin. */
+  .sec--slabs > .shell {
+    padding-block: clamp(1.25rem, 2.5vh, 2rem);
+
+    /* And the spread sits in the middle of that frame, the same air over it
+       as under it, rather than hanging from the top line with everything
+       left over falling in one piece under the shortest column. The three
+       columns are different lengths and the longest of them is the block
+       being centred, so they all still begin on one line.
+
+       Safe centring: if the words ever came to more than the panel holds,
+       centred they would go over both edges at once and the first line would
+       be the one lost. Safe, the block goes back to the top line and only
+       the foot is at risk, which is where a check would find it. */
+    display: grid;
+    align-content: safe center;
+  }
+
+  /* --- Slabs --------------------------------------------------------------
+     The twelve millimetre spread, which is the longest piece of writing in
+     the catalogue. Upright it runs as two columns down a page; here the page
+     is a window on its side, so it is set the way a newspaper sets a story
+     that has to fit a fixed depth: three columns off the top frame line, a
+     hairline down each gutter, the whole argument in view at once. */
+
+  .sec--slabs {
+    /* The one panel whose type is set to the window rather than to the page.
+       Everywhere else a shorter window is answered with a wider panel, which
+       is why the ladder at the foot of this file exists. That answer does
+       not work here: the first of the three parts is nine blocks deep, and
+       nine blocks are nine blocks however long the line is, so past a
+       certain width it stops getting shorter and no amount of panel will
+       make it fit. What it is made of is lines, so the lines are what give.
+
+       At the top of the scale these are the figures the rest of the
+       catalogue uses, to a hundredth of a pixel: a full height window sets
+       this spread exactly as the page sets it. Below that the size comes
+       down with the window until it reaches the smallest this text should
+       ever be read at, which is the point the sideways reading of this one
+       panel stops being offered. */
+    --step-0: clamp(0.9375rem, 0.3rem + 1.18vh, 1.25rem);
+    --step-1: clamp(1.125rem, 0.42rem + 1.3vh, 1.55rem);
+    --step-2: clamp(1.3125rem, 0.36rem + 1.75vh, 1.95rem);
+    /* The two headings come down with the rest. They are set for a page, and
+       the third column is the narrowest on the panel: at the page's size the
+       heading over it breaks into three lines of two words. */
+    --step-4: clamp(1.6rem, 0.5rem + 2.45vh, 2.6875rem);
+    --slabs-gap: clamp(0.5rem, 0.1rem + 0.85vh, 1.3rem);
+  }
+
+  /* The line the Persian is set on comes in with it. At full size it is the
+     1.85 the rest of the catalogue uses; on a short panel it closes to 1.7,
+     which is still open for an Arabic script and is twelve lines of the
+     first part's depth. */
+  html[lang="fa"] .sec--slabs .prose p,
+  html[lang="fa"] .sec--slabs .list {
+    line-height: 1.35;
+  }
+
+  .slabs {
+    display: grid;
+    /* Three, and three exactly, one to each part of the spread: the product
+       and its four named advantages; the environmental case, the uses and
+       the project it names; the yield of the thinner stone. A title of this
+       size means the start of something, and on a panel like this a column
+       of its own is the only way it can say so.
+
+       Asked to pour the text instead and let the parts open columns where
+       they fall, the browser has to be given a height to pour into, and it
+       answers a part that will not fit by making one more column past the
+       inline edge, where the panel's own overflow eats it: a paragraph goes
+       missing and nothing says so. Told the columns instead of asked for
+       them, there is nothing to guess and nothing to lose.
+
+       The three are not the same width, because the three parts are not the
+       same length: the first is nine blocks and the last is three. Set
+       equal, the last would end halfway up the panel and leave a quarter of
+       the spread white. Weighted, all three come down to about the same
+       line, which is what a spread set to a fixed depth is supposed to do. */
+    grid-template-columns:
+      minmax(0, var(--slabs-first, 1.35fr))
+      minmax(0, var(--slabs-second, 1.1fr))
+      minmax(0, var(--slabs-third, 0.68fr));
+    /* A line has a length past which it stops being read and starts being
+       scanned. A very wide window gives this panel more width than three
+       lines of that length, so the spread is capped and centred and the rest
+       goes to the margins, where a printed spread puts it. The cap lifts as
+       the window gets shorter, because there the panel is wide for a reason:
+       it is the width the words need, and it is the ladder at the foot of
+       this file that asked for it. */
+    max-inline-size: max(108rem, 172rem - 80vh, 62vw);
+    margin-inline: auto;
+    column-gap: var(--panel-gap);
+    /* As deep as the longest of the three parts and no deeper, so that what
+       the panel has over is air the frame can divide between the head and
+       the foot. The two shorter columns are stretched to the longest, which
+       is what carries the rules the whole way down the block: a rule that
+       stopped with the last line of its own column would say the spread
+       ended there. */
+    align-items: stretch;
+  }
+
+  /* The wrapper that makes parts two and three the right hand column of the
+     printed spread. Sideways each of them is a column, so it dissolves. */
+  .slabs__side {
+    display: contents;
+  }
+
+  .slabs__col {
+    align-content: start;
+    /* Closer set than the page sets them, and closing further as the panel
+       gets shallower. What decides whether the first part stands in one
+       column is as much the eleven gaps inside it as the words. */
+    gap: var(--slabs-gap);
+  }
+
+  .slabs__benefits {
+    gap: var(--slabs-gap);
+    margin-block-start: 0;
+  }
+
+  /* Everything inside a column is spaced off the same figure, so the whole
+     spread tightens and opens as one thing rather than nine. The quote and
+     the list carry their own air on a page, where there is a page's worth to
+     spare; here the gap between blocks is the air. */
+  .slabs .pull,
+  .slabs .list,
+  .slabs__uses-intro {
+    margin-block-start: 0;
+  }
+
+  .slabs .pull {
+    margin-block-end: 0;
+  }
+
+  .slabs .prose p + p {
+    margin-block-start: var(--slabs-gap);
+  }
+
+  .slabs .list li + li,
+  .slabs .benefit p {
+    margin-block-start: calc(var(--slabs-gap) * 0.55);
+  }
+
+  /* The measure is the column here. */
+  .slabs .list {
+    max-inline-size: none;
+  }
+
+  /* A hairline down each gutter, the rule the print uses between the columns
+     of a spread. Three columns of type without one read as a single wide
+     block that happens to have gaps in it. The rule is drawn on the leading
+     edge of the column and then pulled back half a gutter, so it stands in
+     the middle of the white rather than against the first word of a line. */
+  .slabs__side > .slabs__col {
+    border-inline-start: var(--hairline) solid var(--rule);
+    margin-inline-start: calc(var(--panel-gap) / -2);
+    padding-inline-start: calc(var(--panel-gap) / 2);
+  }
+
+  /* --- Stone --------------------------------------------------------------
+     Already a text column beside a block of figures. The sticky column has
+     nothing to stick to here, and the figures take the panel's height. */
+
+  /* The photographs lead and the type follows, on both of these panels. The
+     print alternates them, which is what a run of pages wants: turn the page
+     and the composition is the other way round. A panel is not turned to, it
+     is travelled to, and the two sections arrive one after the other along
+     the same line, so alternating them here only makes the stone jump the
+     width of the panel between one section and the next. Led by the
+     photographs, both say the same thing in the same order: here is the
+     stone, and here is what it is.
+
+     A narrower column of type than the upright version gives it. There are
+     four sentences and a panel's worth of photographs, so the type is a
+     caption to them rather than the other way round. */
+  .stone {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 3fr);
+    /* Declared, not left to size itself. The figures beside the type ask for
+       the height of the row, and a row the browser is sizing from its
+       content cannot answer that. */
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: var(--panel-gap);
+    align-items: stretch;
+    block-size: 100%;
+  }
+
+  /* The type second, where the flipped section already had it. */
+  .stone .stone__text {
+    order: 1;
+  }
+
+  .stone__text {
+    position: static;
+    align-self: start;
+  }
+
+  /* The arrangement the print uses on pages 30 and 31: one tall photograph
+     with two squarer ones stacked beside it. Upright it is built out of
+     aspect ratios, which is what pushed it past the bottom of a panel here;
+     given a fixed height the rows are declared instead and every frame is
+     whatever the panel leaves it, so the block fills the height exactly and
+     each photograph still lands close to the proportion it was cropped to. */
+  .stone__figures {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.2vw, 1.25rem);
+    block-size: 100%;
+  }
+
+  .stone__figures figure {
+    grid-column: auto;
+    grid-row: auto;
+    aspect-ratio: auto;
+    block-size: 100%;
+  }
+
+  .stone__figures figure:first-child {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  /* --- Footer -------------------------------------------------------------
+     The last panel of the track rather than a band under the document. It
+     keeps the angled edge, turned to face the way the reader is travelling,
+     and still overlaps the photograph before it by exactly that cut. */
+
+  .foot {
+    flex: 0 0 auto;
+    display: grid;
+    align-content: center;
+    inline-size: min(100vw, 46rem);
+    block-size: 100%;
+    margin-block-start: 0;
+    margin-inline-start: calc(var(--cut) * -1);
+    padding-block: 0;
+    padding-inline: 0;
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  html[dir="rtl"] .foot {
+    clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% 100%, 0 100%);
+  }
+
+  .foot > .shell {
+    inline-size: 100%;
+    max-inline-size: none;
+    margin-inline: 0;
+    padding-inline-start: calc(var(--frame) + var(--cut));
+  }
+
+  .foot__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: clamp(2rem, 4vh, 3rem);
+  }
+
+  /* Down the column with the rest, at the edge the reading starts from. */
+  .to-start {
+    align-self: flex-start;
+  }
+
+  /* --- Panels on a smaller window -----------------------------------------
+     Every panel above is laid out to hold a printed spread inside one
+     window, which it does on any ordinary desktop. A smaller window takes
+     width and height away at once: fewer columns of type fit across it, and
+     each of them is shorter. Past the sizes here the words stop fitting.
+
+     Last in the file on purpose. A media query adds no weight of its own, so
+     a rule inside one only wins where the rule it overrides came earlier.
+
+     What a panel of type needs is area: a column of a certain width, for a
+     certain depth. Its width here is the window's, so the shorter the
+     window, the wider the panel has to be to hold the same words, and the
+     widths below are that curve in steps. They are written as a floor in
+     rem rather than as a multiple of the window, so the step depends on the
+     window's height alone: `max()` gives a wide window its own width, which
+     is already more than the floor, and gives a narrow one the floor.
+
+     The advantages spread and the biographies are stepped together here. The
+     twelve millimetre spread has a ladder of its own at the foot of the
+     file, because what it is up against is not the same thing. Every figure
+     was measured, in both languages, at the shortest window its step has to
+     cover, and these are load bearing rather than tidying: a spread of type
+     in columns that is given too little room loses a column off the inline
+     edge without showing it, so changing the words means measuring again.
+
+     There are five steps rather than the dozen an earlier draft wanted
+     because the columns are set by width and not by count: a wider panel
+     takes another column at the same measure instead of stretching the
+     three it had, which both keeps the line the length it should be and
+     flattens most of the curve these steps are following. */
+
+  .sec--columns {
+    --panel: max(100vw, 78rem);
+  }
+
+  .sec--people {
+    --panel: max(100vw, 72rem);
+  }
+
+  @media (max-height: 68rem) {
+    .sec--columns {
+      --panel: max(100vw, 78rem);
+    }
+
+    .sec--people {
+      --panel: max(100vw, 76rem);
+    }
+  }
+
+  @media (max-height: 62rem) {
+    .sec--columns {
+      --panel: max(100vw, 78rem);
+    }
+
+    .sec--people {
+      --panel: max(100vw, 84rem);
+    }
+  }
+
+  @media (max-height: 54rem) {
+    .sec--columns {
+      --panel: max(100vw, 86rem);
+    }
+
+    .sec--people {
+      --panel: max(100vw, 88rem);
+    }
+  }
+
+  @media (max-height: 49rem) {
+    .sec--columns {
+      --panel: max(100vw, 96rem);
+    }
+
+    .sec--people {
+      --panel: max(100vw, 92rem);
+    }
+  }
+
+  @media (max-height: 46rem) {
+    .sec--columns {
+      --panel: max(100vw, 96rem);
+    }
+
+    .sec--people {
+      --panel: max(100vw, 98rem);
+    }
+  }
+
+  @media (max-height: 42rem) {
+    .sec--columns {
+      --panel: max(100vw, 110rem);
+    }
+
+    .sec--people {
+      --panel: max(100vw, 114rem);
+    }
+  }
+
+  /* A photograph beside a column of type gains nothing from a wider panel:
+     the measure is capped, so the extra width goes to the margins rather
+     than to the line. What a short window needs from these is the other way
+     round, a little less photograph and a line allowed to run longer. */
+  @media (max-height: 50rem) {
+    /* A section opener is a whole page carrying four words, and it is set at
+       the size that makes that true. On a panel this shallow the longest of
+       the three would take eight lines of it. */
+    .divider__title {
+      font-size: clamp(2rem, 1rem + 2.6vw, 3.25rem);
+    }
+
+    .feature {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+
+    .feature--flip {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+
+    .feature__inner {
+      max-inline-size: 44rem;
+    }
+
+    .feature--lead .feature__inner {
+      max-inline-size: 38rem;
+    }
+  }
+
+  /* A narrow window shortens the line whatever its height, and there the
+     photograph gives up a third of the panel rather than a quarter. */
+  @media (max-width: 70rem) {
+    .feature {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+
+    .feature--flip {
+      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    }
+
+    .feature__inner,
+    .feature--lead .feature__inner {
+      max-inline-size: 50rem;
+    }
+  }
+
+  /* The shortest window the sideways version is offered on. The frame comes
+     in to the width of a line of type, and the longest of the introductions
+     gets a quarter panel of photograph beside it rather than a third. */
+  @media (max-height: 44rem) {
+    .doc {
+      --panel-pad: 1rem;
+    }
+
+    .feature,
+    .feature--lead {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    }
+
+    .feature--flip {
+      grid-template-columns: minmax(0, 9fr) minmax(0, 3fr);
+    }
+
+    .feature__inner,
+    .feature--lead .feature__inner {
+      max-inline-size: 50rem;
+    }
+
+    /* A display size set for a page is too large for a panel this shallow,
+       where a title of six words takes three of the lines there are. */
+    .feature .title {
+      font-size: var(--step-1);
+    }
+  }
+
+  /* --- The twelve millimetre panel on a smaller window ---------------------
+     A ladder of its own, because what this panel is up against is not what
+     the others are. Elsewhere a shorter window is answered with a wider one,
+     and the words that would have fallen off the bottom go along the extra
+     width instead. Here the first of the three parts is nine blocks deep and
+     has to stand in a column: nine blocks are nine blocks however long the
+     line is, so past a certain width the part stops getting shorter and the
+     extra width buys nothing.
+
+     So the width does what it still can, which is stop the paragraphs inside
+     those blocks from running to three lines where they ran to two, and the
+     type size does the rest. Each figure is the narrowest panel that holds
+     all three parts at the shortest window its step has to cover, found by
+     search rather than by rounding up, because every rem of it past what is
+     needed is a panel the reader has to scroll to see the end of. Persian is
+     the longer of the two languages here and governs every step.
+
+     This ladder is last in the file, after the shared one, and steps down:
+     on a short window several of these match at once and the last one wins.
+
+     Changing a word on this spread means measuring these again. */
+
+  .sec--slabs {
+    --panel: max(100vw, 86rem);
+  }
+
+  @media (max-height: 60rem) {
+    .sec--slabs {
+      --panel: max(100vw, 93rem);
+    }
+  }
+
+  @media (max-height: 55rem) {
+    .sec--slabs {
+      --panel: max(100vw, 111rem);
+    }
+  }
+
+  @media (max-height: 50.5rem) {
+    .sec--slabs {
+      --panel: max(100vw, 117rem);
+    }
+  }
+
+  @media (max-height: 48rem) {
+    .sec--slabs {
+      --panel: max(100vw, 122rem);
+    }
+  }
+
+  /* Below this the long parts will not stand in a column at any width: the
+     first is nine blocks and the second is six, and the panel has room for
+     about five. Rather than give up the arrangement the reader was promised,
+     the two long parts are set across two measures each inside their own
+     column. The spread is still the three parts, the rules still fall
+     between them and the eye still finds each one where it was told to look;
+     the long ones simply read two columns wide, which is what a newspaper
+     does with a lead item on a shallow page. Which two are long depends on
+     the language — the first in Persian, the second in English — so both are
+     given the room and the shorter one balances into half of it.
+
+     No rule between the two measures of a part. A hairline there would make
+     five columns of what is meant to read as three. */
+  @media (max-height: 47rem) {
+    .slabs {
+      grid-template-columns:
+        minmax(0, var(--slabs-first, 2.1fr))
+        minmax(0, var(--slabs-second, 1.9fr))
+        minmax(0, var(--slabs-third, 0.75fr));
+    }
+
+    /* Balanced across the two measures rather than poured down a given
+       height. Poured, the browser needs a depth to pour into and answers a
+       part that will not fit by making a third measure past the inline edge
+       where the panel eats it. Balanced with the count fixed at two, there
+       are two and the part is as deep as half of itself. */
+    .slabs__col:first-child,
+    .slabs__side > .slabs__col:first-child {
+      display: block;
+      column-count: 2;
+      column-gap: var(--panel-gap);
+    }
+
+    /* A grid's gaps do not survive the change, so they are put back as
+       margins, and the blocks that must not be broken across the two
+       measures are named. */
+    .slabs__col > * + *,
+    .slabs__benefits > * + * {
+      margin-block-start: var(--slabs-gap);
+    }
+
+    .slabs__benefits {
+      display: block;
+    }
+
+    .slabs .benefit,
+    .slabs .list,
+    .slabs .pull {
+      break-inside: avoid;
+    }
+
+    .slabs .benefit__title,
+    .slabs .title {
+      break-after: avoid;
+    }
+
+    .sec--slabs {
+      --panel: max(100vw, 112rem);
+    }
+  }
+
+  /* The shallowest panel the sideways version is offered on. The third part
+     is two paragraphs and a title, and it is the only one still standing in
+     a single measure, so on a panel this shallow it is the one that runs out
+     of room; the width it needs comes off the two that are set two up. */
+  @media (max-height: 43rem) {
+    .sec--slabs {
+      --panel: max(100vw, 124rem);
+      --slabs-third: 0.95fr;
+    }
+  }
+}
+
+
+/* ==========================================================================
+   The narrow composition
+
+   A phone held upright. The window is taller than it is wide, so nothing
+   goes side by side and a panel stops being a spread: it is a card, one
+   screen of it, and the reader swipes through a deck of them.
+
+   Two things follow, and everything below is one or the other.
+
+   What was beside something is now over it. A photograph and the words about
+   it, the green field and the section title, the stone and its caption: each
+   pair keeps its order, which is the order it is read in, and turns a
+   quarter turn. Where the pair had a share of the width it takes the same
+   share of the height.
+
+   And a card holds what a card holds. The long sections are given more than
+   one card rather than a card with the foot cut off it, and where the
+   writing is already in parts, the parts are where it divides: a part opens
+   a card and runs on to the next if it needs one. The count is `--cards`,
+   set per section from what was measured at the narrowest phone the deck is
+   offered on, and checked.
+
+   The mechanism for the sections that run on is the same one everywhere: the
+   block is set in columns exactly one card wide, poured rather than
+   balanced, with the frame moved off the shell and onto the blocks inside
+   it, so that every column carries the frame and not just the first and the
+   last. Poured, a part is given the whole height of a card and the next part
+   is told to start a new one.
+   ========================================================================== */
+
+@media (min-width: 20rem) and (min-height: 34rem) {
+  @media (max-width: 59.9375rem), (max-height: 37.9375rem) {
+    /* --- The deck ---------------------------------------------------------- */
+
+    .doc {
+      /* A card is a phone screen, so the air around the type is a phone's
+         worth rather than a spread's. */
+      --panel-pad: clamp(1.25rem, 3vh, 2rem);
+
+      /* The writing stands a tenth of the card in from either edge, as the
+         owner set it, rather than the frame the photographs keep: at the
+         frame alone the type ran to within a finger of the glass. */
+      --text-frame: max(var(--frame), 10vw);
+      --panel-gap: clamp(0.75rem, 3.5vw, 1.25rem);
+
+      /* The type scale, redrawn for a card. The page's steps are set for a
+         spread, where a heading has half a window of width to stand in, and
+         on a phone they come out loud: a section title two lines of 34px
+         deep before a word of the section is read, a lede the size a heading
+         should be. The body stays where it is, sixteen pixels, which is what
+         a phone reads at; the steps above it close in on it, so the
+         hierarchy is carried by weight and green rather than by size alone. */
+      --step-1: 1.0625rem;
+      --step-2: 1.1875rem;
+      --step-4: clamp(1.5rem, 1.1rem + 2vw, 1.75rem);
+    }
+
+    /* The deck's own line for the running text: a shade closer than the
+       page's, because the lines are short and a short line wants less air
+       between it and the next to be read as one paragraph. */
+    html[lang="fa"] .doc .prose p,
+    html[lang="fa"] .doc .list li,
+    html[lang="fa"] .doc .lede {
+      line-height: 1.35;
+    }
+
+    /* A title and the heading under it are one unit. The page sets a
+       paragraph's worth of air between them because a page has it to spare. */
+    .doc .title {
+      line-height: 1.25;
+    }
+
+    html[lang="fa"] .doc .title {
+      line-height: 1.3;
+    }
+
+    .doc .heading {
+      margin-block-start: var(--space-3);
+    }
+
+    .doc .title + .prose,
+    .doc .heading + .prose {
+      margin-block-start: var(--space-3);
+    }
+
+    /* --- Rhythm on a card ---------------------------------------------------
+       What belongs together is set close and what does not is set apart, so
+       that a card reads as groups and not as lines at one even distance. A
+       title sits on what it heads; the items of a list sit on each other,
+       and on the sentence that introduces them; a new block stands off the
+       one before it by more air than anything inside either. Set evenly,
+       the items of a list stood as far apart as two paragraphs and a title
+       as close to the list above it as to its own, and the writing read as
+       one thing after another. */
+    .doc .title + .list {
+      margin-block-start: var(--space-3);
+    }
+
+    .doc .list li + li {
+      margin-block-start: var(--space-1);
+    }
+
+    html[lang="fa"] .doc .list li {
+      line-height: 1.35;
+    }
+
+    .doc .prose + .list,
+    .doc .slabs__uses-intro + .list {
+      margin-block-start: var(--space-3);
+    }
+
+    .doc .list + .prose,
+    .doc .list + .pull {
+      margin-block-start: var(--space-5);
+    }
+
+    .doc .columns__block + .columns__block,
+    .doc .slabs__side > .slabs__col {
+      margin-block-start: var(--space-8);
+    }
+
+    /* The section opener's title comes down with the rest, and the green
+       banner over a generation is a label rather than a heading, so it is
+       set like one. */
+    .doc .divider__title {
+      font-size: clamp(1.875rem, 1.3rem + 2.8vw, 2.25rem);
+    }
+
+    .doc .tag {
+      padding: var(--space-2) var(--space-5);
+      font-size: 1rem;
+    }
+
+    /* The cover is sized against the mark over it, not against the scale. */
+    .doc .cover__line {
+      font-size: clamp(1.75rem, 1.2rem + 3vw, 2.125rem);
+    }
+
+    /* A section may be more than one card wide. Most are one.
+
+       The counts on the few that are not are the number the smallest phone
+       the deck is offered on needs, measured in both languages: too many
+       leaves a card of white at the end of a section, too few loses the last
+       column of it off the inline edge. `assets/js/catalogue-wide.js` takes
+       the white back by measuring the words against the card they are on and
+       writing the real number over these; these are what stands if it never
+       runs, and nothing is lost when it does not. */
+    .sec {
+      --panel: calc(100vw * var(--cards, 1));
+    }
+
+    /* A whole card, where the spread gives a photograph most of a window and
+       lets the edge of the next panel show. On a spread that edge is what
+       tells a reader the document goes sideways. In a deck it is a card that
+       never comes to rest square: every panel after it sits a strip off the
+       screen, and a swipe lands between two of them. */
+    .sec--plate {
+      --panel: 100vw;
+    }
+
+    /* A card comes to rest on a card, however it was moved: swiped, turned
+       with a wheel, dragged by the bar or stepped with the keys, and on a
+       desktop browser pretending to be a phone, which reports a mouse. This
+       was once for touch alone, because the wheel's glide sets the track a
+       few pixels at a time and a snap fights it over the last few pixels of
+       every turn; on a card the wheel turns a whole card instead (see
+       `catalogue-wide.js`), so there is nothing left for the two to fight
+       over, and nothing is left resting half way between two cards.
+
+       Every panel is a stop. So is every card inside a panel that runs on,
+       but those are columns of poured type and a column is not an element,
+       so the script marks them (`.deck-stop`, placed where it counted the
+       cards) and only then asks for every swipe to end on one. Until it has,
+       the snap is by proximity, which never takes a reader away from a card
+       there is nothing to mark. */
+    .doc {
+      scroll-snap-type: x proximity;
+    }
+
+    html.deck-stops .doc {
+      scroll-snap-type: x mandatory;
+    }
+
+    .sec,
+    .foot,
+    .deck-stop {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .deck-stop {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(var(--at) * 100vw);
+      inline-size: 1px;
+      pointer-events: none;
+    }
+
+    /* A card's own edge is its page turn, so the hairline the spread draws
+       down the side of a panel is not drawn. At rest on a card it stood as
+       a stray line down the edge of the screen, and only on the cards whose
+       section happened to follow another section of writing. */
+    .sec:not(.sec--plate, .sec--divider, .sec--cover) + .sec:not(.sec--plate, .sec--divider, .sec--cover)::before {
+      content: none;
+    }
+
+    /* The frame comes off the shell on every section whose blocks are poured
+       across more than one card, and goes on to the blocks. Padding on a
+       multiple column box is at the two ends of the box, so left on the
+       shell it would frame the first card on one side and the last on the
+       other and leave everything between them running to the trim. */
+    .sec--columns > .shell,
+    .sec--people > .shell,
+    .sec--slabs > .shell {
+      padding-inline: 0;
+    }
+
+    /* --- Divider ------------------------------------------------------------
+       The green field and the title, turned a quarter turn: the green across
+       the top, which on a card is where the reading starts as the start edge
+       is where it starts on a spread, and the title under it. The 5:7 of the
+       print is kept, so the title has the larger share and the pause below
+       it that a section opener is supposed to have.
+
+       The green stops on the deck's horizon (`--horizon`), the line every
+       photograph across the head of a card also stops on, so that swiping
+       from a section opener to the photograph after it the two edges run
+       on as one line instead of stepping. The script sets it; without the
+       script it is the 5:12 of the print on both. */
+
+    .divider {
+      min-block-size: 0;
+      block-size: 100%;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: var(--horizon, minmax(0, 5fr)) minmax(0, 7fr);
+    }
+
+    .divider__green {
+      min-block-size: 0;
+    }
+
+    .divider__face {
+      padding: clamp(1.75rem, 4.5vh, 3rem) var(--text-frame) 0;
+      align-content: start;
+      justify-items: start;
+      max-inline-size: none;
+    }
+
+    /* --- Feature ------------------------------------------------------------
+       The photograph across the top of the card and the writing running on
+       under it, on to a second card where there is more of it than one card
+       holds. The photograph bleeds to the trim on three sides, which is what
+       a phone does best with one, and the words take the frame.
+
+       A band and not a card of its own. Given a whole card the photograph
+       would leave the shortest of these five sections a card of writing with
+       two paragraphs on it, and the longest would still want two more. */
+
+    .sec--feature {
+      --cards: 3;
+    }
+
+    /* A feature section has no shell: the composition is the panel's only
+       child, so it is the poured box itself. */
+    .feature {
+      display: block;
+      block-size: 100%;
+      column-width: 100vw;
+      column-gap: 0;
+      column-fill: auto;
+      padding-block: var(--panel-pad);
+      gap: 0;
+    }
+
+    .feature__figure,
+    .feature--lead .feature__figure {
+      /* Down to the horizon, the same line as every other photograph at the
+         head of a card and every section opener's green. Each photograph was
+         once sized to what its own writing left, and five sections in a row
+         came out five different heights, stepping at every swipe. The
+         horizon is the one the shortest of those leaves, so every section
+         that fitted one card still does; see `fitHorizon` in
+         assets/js/catalogue-wide.js. Without it, 5:12 of the card, as the
+         divider. The percentage is of the box inside the frame, and the
+         photograph starts on the trim, a frame higher. */
+      block-size: var(--horizon, calc((100% + 2 * var(--panel-pad)) * 5 / 12));
+      inline-size: 100%;
+      aspect-ratio: auto;
+      /* Up through the top frame line and out to both trims. */
+      margin: calc(var(--panel-pad) * -1) 0 var(--panel-pad);
+      break-inside: avoid;
+      break-after: avoid;
+    }
+
+    .feature__text,
+    .feature--flip .feature__text,
+    .feature--lead .feature__text {
+      display: block;
+      padding-block: 0;
+      padding-inline: var(--text-frame);
+    }
+
+    .feature__inner,
+    .feature--lead .feature__inner {
+      display: block;
+      inline-size: 100%;
+      max-inline-size: none;
+      margin-inline: 0;
+    }
+
+    .feature--lead .feature__inner > * {
+      grid-column: auto;
+    }
+
+    .feature .title {
+      break-after: avoid;
+    }
+
+    .feature .list li {
+      break-inside: avoid;
+    }
+
+    /* Where the writing under the photograph would run on to a second card
+       by a few lines, and would fit one card on its own, the two cards are
+       given the other way round: the photograph a card to itself, bleeding
+       to the trim as the plates do, and then the writing whole on the card
+       after it. Run on, the second card was three lines at its head and
+       white to the foot. The script measures the words and sets the class
+       (`plateFeature` in assets/js/catalogue-wide.js). */
+    .feature--plated {
+      display: grid;
+      grid-template-columns: repeat(2, 100vw);
+      grid-template-rows: minmax(0, 1fr);
+      column-width: auto;
+    }
+
+    .feature--plated .feature__figure {
+      block-size: auto;
+      margin: calc(var(--panel-pad) * -1) 0;
+    }
+
+    /* --- Columns ------------------------------------------------------------
+       The advantages spread: three blocks of writing and eight photographs.
+       The blocks run on one after another, a new block marked by the air
+       over its title rather than by a card of its own: a block to a card
+       left two cards of three mostly white. The photographs follow on the
+       card after them as two across and four down, which is the printed
+       band turned upright. */
+
+    .sec--columns {
+      --text-cards: 4;
+      --cards: calc(var(--text-cards) + 1);
+    }
+
+    .sec--columns > .shell {
+      display: grid;
+      grid-template-columns: calc(100vw * var(--text-cards)) 100vw;
+      grid-template-rows: minmax(0, 1fr);
+      column-gap: 0;
+      row-gap: 0;
+    }
+
+    .columns__text {
+      display: block;
+      column-width: 100vw;
+      column-gap: 0;
+      column-fill: auto;
+      block-size: 100%;
+    }
+
+    .columns__block {
+      padding-inline: var(--text-frame);
+    }
+
+    .columns__block .title,
+    .columns__block .benefit__title {
+      break-after: avoid;
+    }
+
+    .columns__text li {
+      break-inside: avoid;
+    }
+
+    /* A paragraph may run from the foot of one card to the head of the next,
+       as it runs from one page to the next in print; kept whole, a long one
+       jumps the gap and leaves a hand's width of white under the last line
+       before it. Never with a single line stranded at either end. */
+    .doc .prose p {
+      orphans: 3;
+      widows: 3;
+    }
+
+    .band {
+      grid-auto-rows: minmax(0, 1fr);
+      block-size: 100%;
+      margin-block-start: 0;
+      padding-inline: var(--frame);
+    }
+
+    .band figure {
+      aspect-ratio: auto;
+      block-size: 100%;
+    }
+
+    /* Where the writing leaves at least half of its last card empty, the
+       photographs come up into it under the words instead of following on a
+       card of their own: a card two thirds white and then a card of
+       photographs become one card that is both. The script measures what the
+       words leave (`--band-room`); the band closes on the bottom frame line
+       as it does on a card of its own. */
+    .sec--columns.columns--band-up {
+      --cards: var(--text-cards);
+    }
+
+    .columns--band-up > .shell {
+      grid-template-columns: calc(100vw * var(--text-cards));
+    }
+
+    .columns--band-up .columns__text,
+    .columns--band-up .band {
+      grid-area: 1 / 1;
+    }
+
+    .columns--band-up .band {
+      justify-self: end;
+      align-self: end;
+      inline-size: 100vw;
+      block-size: calc(var(--band-room) - var(--space-8));
+    }
+
+    /* --- People -------------------------------------------------------------
+       The generation's head, its banner, what the print says of it and who
+       it was, and then its two lives under it, one under the other as they
+       stand down the upright page. A life is never broken, so where the
+       second has no room under the first it takes the next card whole. */
+
+    /* A generation is one card: its head and both its lives, on every phone
+       that can be made to hold them. A phone's card is the screen less the
+       browser's own bars, which on a phone in the hand is a good deal less
+       than the screen, and as first set the second life was sent on to a
+       card of its own on most of them.
+
+       The words and their sizes are never touched: every word is the
+       client's and every size is the one set here. What gives is the air.
+       Everything else on these cards is drawn between the setting as made
+       (`--fit: 0`) and the closest it can be drawn (`--fit: 1` and a little
+       past it): the leading of the lives from 1.75 to no less than 1.55 in
+       Persian, the lede's from 1.6 to 1.5, the portraits from four rem to
+       under three, and the space between the parts and round the card by
+       about half, each with a floor it never goes under. `fitPeople` in the
+       script sets the least that puts both generations whole on one card
+       each, the same on both so the two read as a pair. Past the closest
+       setting the lives also run beside their portraits (`people--wrap`,
+       below); where even that is not enough the setting goes back to as
+       made, and the second life goes on to the next card as it did. */
+    .sec--people {
+      --cards: 5;
+      --fit: 0;
+      --byline: max(2.75rem, calc(4rem - var(--fit) * 1rem));
+      --between: max(1rem, calc(2rem - var(--fit) * 0.75rem));
+    }
+
+    .sec--people > .shell {
+      display: block;
+      column-width: 100vw;
+      column-gap: 0;
+      column-fill: auto;
+      padding-block: max(0.625rem, calc(var(--panel-pad) - var(--fit) * (var(--panel-pad) - 0.875rem)));
+    }
+
+    .sec--people .tag {
+      padding-block: max(0.25rem, calc(0.5rem - var(--fit) * 0.125rem));
+    }
+
+    /* The banner and the names are titles, a line or two each, and are led
+       as the titles on a card are rather than as the running text they were
+       taking theirs from, which stood a one line banner a third taller than
+       its words. */
+    html[lang="fa"] .doc .sec--people .tag,
+    html[lang="fa"] .doc .person__name {
+      line-height: 1.3;
+    }
+
+    html[lang="en"] .doc .sec--people .tag,
+    html[lang="en"] .doc .person__name {
+      line-height: 1.25;
+    }
+
+    .sec--people > .shell > * {
+      padding-inline: var(--text-frame);
+    }
+
+    /* The generation's head, the banner and the lede, opens the card its two
+       lives follow on: one block, read from the banner down. Given a card
+       of its own the head was a card with three lines on it.
+
+       The frame is the head's padding, so the green banner inside it starts
+       on the frame, on the line the words under it start on. Given the frame
+       as padding itself it took the frame inside its green, and ran out to
+       the edge of the card, where it met the green of the section opener on
+       the card before and the two read as one shape. */
+    .people__head .people__lede {
+      margin-block-start: max(0.5rem, calc(1rem - var(--fit) * 0.375rem));
+    }
+
+    html[lang="fa"] .doc .people__lede {
+      line-height: max(1.3, calc(1.35 - var(--fit) * 0.05));
+    }
+
+    html[lang="en"] .doc .people__lede {
+      line-height: max(1.25, calc(1.3 - var(--fit) * 0.05));
+    }
+
+    .people__head .people__lede p + p {
+      margin-block-start: max(0.375rem, calc(0.75rem - var(--fit) * 0.375rem));
+    }
+
+    /* A grid is one piece and cannot be poured, so the list of lives stops
+       being one. The page's rule stands between the head and the first
+       life as it stands between the two lives. */
+    .people__list {
+      display: block;
+      margin-block-start: max(0.625rem, calc(1.5rem - var(--fit) * 0.625rem));
+      padding-block-start: max(0.625rem, calc(1.5rem - var(--fit) * 0.625rem));
+      border-block-start: var(--hairline) solid var(--rule);
+    }
+
+    /* The two lives are one run of writing, the second straight under the
+       first. Where a card has room for both, both are on it; where it does
+       not, the second goes on to the next card whole. Let run on a line at a
+       time, it left its last three lines at the head of a card of white, a
+       card that looked lost rather than turned to; moved whole, each card
+       opens on a person and holds the whole of what it says of them. The
+       first life runs on from the head a line at a time, as any writing
+       does, and so does a life longer than a card.
+
+       A life is set in flow and not on a grid, so that one longer than a
+       card can still be carried on a line at a time. The page's rule over a
+       life is drawn out of the flow below, so that it can be left off where
+       a life opens a card. */
+    .person {
+      position: relative;
+      display: block;
+      padding-block-start: 0;
+      border-block-start: 0;
+    }
+
+    /* The first life is not held whole: sent on, it would leave the head
+       on a card by itself, a banner and three lines. */
+    .person + .person {
+      break-inside: avoid;
+    }
+
+    /* The space over the second life is a margin, so that if it is ever sent
+       on to a card of its own the space goes with the break and the life
+       starts on the card's top line like every other card does. */
+    .person + .person {
+      margin-block-start: var(--between);
+    }
+
+    /* The page's rule, halfway down that space, when the second life starts
+       on the same card as the first: `markLives` in the script says when. */
+    .person--under::before {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: calc(var(--between) / -2);
+      block-size: var(--hairline);
+      background-color: var(--rule);
+    }
+
+    /* The byline: the portrait against the leading edge and the name beside
+       it, on its middle. A byline and not the page's portrait over the name,
+       because down a page there is a page to spare, and here the depth the
+       portrait takes is depth the second life needs to start on this card.
+       The two are the same height, so they always go on to a card together;
+       and the name holds on to the first lines of the life under it. */
+    .person__portrait {
+      --cut: calc(var(--byline) / 4);
+
+      float: inline-start;
+      inline-size: var(--byline);
+      margin-inline-end: max(0.875rem, calc(1.25rem - var(--fit) * 0.25rem));
+    }
+
+    .person__body {
+      display: block;
+    }
+
+    .person__name {
+      display: flex;
+      align-items: center;
+      /* The portrait's height, at three to four. */
+      min-block-size: calc(var(--byline) * 4 / 3);
+      break-inside: avoid;
+      break-after: avoid;
+    }
+
+    .person--no-portrait .person__name {
+      min-block-size: 0;
+    }
+
+    /* The last step before a generation is let go on to two cards: the
+       name at the head of the life, beside the portrait, and the life's
+       first lines running on beside it as a column runs round a picture in
+       print, rather than starting under it. It saves the depth of the
+       portrait less a line, on each life. */
+    .people--wrap .person__name {
+      display: block;
+      min-block-size: 0;
+    }
+
+    .people--wrap .person__bio {
+      clear: none;
+    }
+
+    .people--wrap .person__body::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+
+    .person__bio {
+      clear: both;
+      margin-block-start: max(0.25rem, calc(0.5rem - var(--fit) * 0.125rem));
+    }
+
+    /* A life longer than a card, the one kind that is broken, may leave two
+       lines at the foot of a card rather than the three a paragraph is held
+       to elsewhere. Two is enough to be the start of something. */
+    .doc .person__bio p {
+      orphans: 2;
+    }
+
+    /* A life is set a step under the running text, as a note on the person
+       rather than a paragraph of the catalogue, and closer: the byline over
+       it already says whose it is. It is what lets a generation's head and
+       both its lives stand on one card on a phone of ordinary height. */
+    .doc .person__bio {
+      font-size: 0.9375rem;
+    }
+
+    html[lang="fa"] .doc .person__bio p {
+      line-height: max(1.3, calc(1.35 - var(--fit) * 0.05));
+    }
+
+    html[lang="en"] .doc .person__bio p {
+      line-height: max(1.25, calc(1.3 - var(--fit) * 0.05));
+    }
+
+    .person .list li {
+      break-inside: avoid;
+    }
+
+    .people__lede {
+      max-inline-size: none;
+    }
+
+    /* --- Slabs --------------------------------------------------------------
+       The three parts again, running on one after another as the advantages
+       do, each opened by the air over its title. */
+
+    .sec--slabs {
+      --cards: 7;
+    }
+
+    .sec--slabs > .shell {
+      display: block;
+      column-width: 100vw;
+      column-gap: 0;
+      column-fill: auto;
+    }
+
+    .slabs {
+      display: block;
+    }
+
+    .slabs__side {
+      display: contents;
+    }
+
+    .slabs__col {
+      display: block;
+      padding-inline: var(--text-frame);
+    }
+
+    /* A grid's gaps do not survive a block, so they come back as margins. */
+    .slabs__col > * + *,
+    .slabs__benefits > * + * {
+      margin-block-start: var(--space-5);
+    }
+
+    .slabs__benefits {
+      display: block;
+      margin-block-start: var(--space-5);
+    }
+
+    .slabs .benefit,
+    .slabs .list li,
+    .slabs .pull {
+      break-inside: avoid;
+    }
+
+    .slabs .title,
+    .slabs .benefit__title {
+      break-after: avoid;
+    }
+
+    /* --- Stone --------------------------------------------------------------
+       The photographs over the writing, as the two panels have them sideways:
+       the stone first and then what it is. The printed arrangement of three
+       frames, one tall and two square beside it, is kept. There are four
+       sentences here and they fit under it, so this one stays a single card.
+
+       Granite and quartzite are the same composition, and on two cards in a
+       row any difference between them is a difference the reader sees. Left
+       to itself each block of photographs takes what its own writing leaves,
+       and granite, which has more to say, came out a shorter block than
+       quartzite. `fitStones` in the script gives both the block the longer
+       writing leaves (`--stone-figures`), so the frames stand in the same
+       places on both cards and the title under them starts on the same line.
+       Without the script each keeps its own share. */
+
+    .stone {
+      block-size: 100%;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: var(--stone-figures, minmax(0, 7fr)) auto;
+      gap: var(--panel-gap);
+      align-items: stretch;
+    }
+
+    .stone .stone__text {
+      order: 1;
+      position: static;
+      align-self: start;
+    }
+
+    .stone__figures {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: var(--panel-gap);
+      block-size: 100%;
+    }
+
+    .stone__figures figure {
+      grid-column: auto;
+      grid-row: auto;
+      aspect-ratio: auto;
+      block-size: 100%;
+    }
+
+    /* The upright page crops this one to 3:4 and takes the crop back again
+       above 60rem, where the two square frames beside it set the height and
+       it stretches to them. A card is below that breakpoint, so the crop is
+       taken back here instead; left on, the figure asks for four thirds of
+       its own height in width and runs off both sides of the card. */
+    .stone__figures figure:first-child {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      aspect-ratio: auto;
+      block-size: 100%;
+    }
+
+    /* --- Footer -------------------------------------------------------------
+       The last card, keeping the angled edge and the overlap with the
+       photograph before it. One column of contact details, which is what it
+       already is at this width. */
+
+    .foot {
+      flex: 0 0 auto;
+      display: grid;
+      align-content: center;
+      inline-size: 100vw;
+      block-size: 100%;
+      margin-block-start: 0;
+      margin-inline-start: calc(var(--cut) * -1);
+      padding-block: 0;
+      padding-inline: 0;
+      clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    html[dir="rtl"] .foot {
+      clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% 100%, 0 100%);
+    }
+
+    .foot > .shell {
+      inline-size: 100%;
+      max-inline-size: none;
+      margin-inline: 0;
+      padding-inline-start: calc(var(--frame) + var(--cut));
+    }
+
+    .foot__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: clamp(1.5rem, 3.5vh, 2.5rem);
+    }
+
+    /* --- Motion -------------------------------------------------------------
+       On a card the swipe is the motion. A spread is travelled across and a
+       block arriving from the trailing edge is part of the travel; a card is
+       carried in under a thumb, and the reader is reading it the moment it
+       lands. Words that fade in after it has landed make the reader wait for
+       what they came to read, and words that fade out while it is still
+       being dragged away take the last line of it from under their eyes.
+
+       So on a card the words and the titles are simply there. What still
+       moves is what is not read: a photograph opens on its first arrival and
+       drifts against the swipe, and a section opener's green comes down the
+       first time it is met. None of it goes back, which is the one thing
+       here the stylesheet cannot say on its own: `--reveal-returns` tells
+       the observer in catalogue.js to leave them where they arrived. */
+
+    :root {
+      --reveal-returns: 0;
+    }
+
+    /* `html.js[dir]` rather than `.js`: the class is on <html> itself, and
+       the attribute is there to outweigh the rtl variants of these rules,
+       which carry it too. */
+    @media (prefers-reduced-motion: no-preference) {
+      html.js[dir] .reveal.is-out {
+        opacity: 1;
+        transform: none;
+      }
+
+      html.js[dir] .is-out .word > span,
+      html.js[dir] .word.is-out > span {
+        transform: none;
+      }
+
+      /* The green is a band across the top of the card here, so it comes
+         down from the top, as it does on a page, rather than in from the
+         side, as it does on a spread. */
+      html.js[dir] .divider.is-out .divider__green {
+        clip-path: inset(0 0 100% 0);
+      }
+    }
+  }
+}
+
+@keyframes drift-inline {
+  from {
+    transform: translateX(-12.2%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes drift-inline-rtl {
+  from {
+    transform: translateX(12.2%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}

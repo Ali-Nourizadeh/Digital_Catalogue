@@ -1,0 +1,2124 @@
+/* ==========================================================================
+   Behkooshan, the printed catalogue as one scrolling document
+
+   The print is forty pages of white paper: a green title page facing each
+   section opener, one photograph running across each spread, a single column
+   of justified type over it, and a green rule of a heading above. This
+   stylesheet is that, unfolded into a single scroll.
+
+   Everything is written with logical properties, so the same rules serve the
+   Persian document (rtl) and the English one (ltr) without a mirrored copy.
+   The two documents are separate files; only one language is ever on screen.
+
+   Light only, on purpose. The artefact being reproduced is printed on white
+   paper and the brand has no dark palette. tokens.css carries an unused dark
+   block behind [data-theme="dark"]; nothing here switches it on.
+   ========================================================================== */
+
+/* --- Catalogue tokens -----------------------------------------------------
+   Layered over tokens.css. The brand greens stay as the guide sets them; the
+   one value added here is the green actually printed in the catalogue, read
+   off the PDF at rgb(24 75 54). It sits inside the brand's deep green family
+   and measures 10.2:1 on paper, so it carries headings as well as panels. */
+
+:root {
+  --print-green: #184b36;
+
+  --page: var(--paper);
+  --frame: var(--gutter);
+
+  /* The distance from the inside of the shell to the edge of the window.
+     A photograph given this as a negative margin runs off the edge, which is
+     what every photograph in the print does against the trimmed page. */
+  --bleed: calc(var(--frame) + max(0px, (100vw - var(--shell)) / 2));
+
+  /* Half the shell's text area. A two column section splits on this line,
+     so the type keeps the same measure whatever the window does with the
+     space outside the shell. */
+  --half: calc((min(var(--shell), 100vw) - 2 * var(--frame)) / 2);
+
+  /* A wider shell than the first design used. The print page is tall and
+     narrow; on screen the spread is the unit, so the text column can sit
+     inside a much wider field without the measure ever getting long. */
+  --shell: 84rem;
+  --gutter: clamp(20px, 5vw, 80px);
+
+  --bar-h: 3.75rem;
+
+  /* One radius for the whole document: none. The print has no rounded
+     corner anywhere and neither does the brand. */
+  --radius: 0;
+
+  /* Motion. The reveal is slow enough to read as placing rather than
+     popping, and the stagger step is small enough that a six item list
+     finishes before the eye reaches the bottom of it. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-reveal: 900ms;
+  --dur-word: 720ms;
+  --step-delay: 70ms;
+
+  /* The lean of a photograph under the pointer. Not the reveal's curve:
+     that one covers most of its distance in the first tenth of its time,
+     which reads as placing when a thing arrives and as a jump when a
+     picture is only being looked at. This one starts slowly and settles
+     slowly, over twice the time. */
+  --ease-lean: cubic-bezier(0.33, 0, 0.2, 1);
+  --dur-lean: 1600ms;
+}
+
+@media (min-width: 60rem) {
+  :root {
+    --bar-h: 4.25rem;
+  }
+}
+
+/* --- Reset ---------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  /* The bar is fixed, so an anchored jump has to stop short of it. */
+  scroll-padding-block-start: var(--bar-h);
+  -webkit-text-size-adjust: 100%;
+
+  /* Deliberately not smooth. The document is twenty thousand pixels long:
+     a jump from the contents, or a language switch landing on the section
+     being read, would spend two seconds travelling through sections nobody
+     asked to see. The motion in this page belongs to the content arriving,
+     not to the scrollbar. */
+  scroll-behavior: auto;
+}
+
+body {
+  background-color: var(--page);
+  color: var(--ink);
+  font-size: var(--step-0);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[lang="fa"] body {
+  font-family: var(--font-fa);
+  line-height: var(--leading-body-fa);
+}
+
+html[lang="en"] body {
+  font-family: var(--font-en);
+  line-height: var(--leading-body-en);
+}
+
+img {
+  display: block;
+  max-inline-size: 100%;
+}
+
+/* The UA rule for [hidden] loses to any author `display`, and several
+   components here set one. The contents button ships hidden and is shown by
+   script, so without this it would be offered on a page that cannot open it. */
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--print-green);
+  outline-offset: 3px;
+}
+
+::selection {
+  background-color: var(--print-green);
+  color: var(--paper);
+}
+
+/* --- The cut corner -------------------------------------------------------
+   The brand's one piece of geometry, and the shape the print clips its
+   portraits into: a notch off the corner of the frame that faces the type.
+   It goes on the framed photographs only. A full bleed plate has no frame to
+   cut, and a notch out of a photograph running off the edge of the window
+   reads as a rendering fault rather than as a shape.
+
+   clip-path has no logical keywords, so rtl carries its own polygon. The
+   notch is a length rather than a percentage, which keeps it the same
+   forty five degrees on a square portrait and on a wide figure. */
+
+.cut {
+  --cut: 1.75rem;
+
+  /* The stroke is the padding: the frame paints it and the photograph sits
+     one pixel inside, so the line follows the diagonal as well as the four
+     straight edges. A plain border would be clipped away at the notch.
+     Half ink, which measures 3.5:1 on paper: enough to give a photograph
+     with a white studio ground an edge, quiet enough not to read as a
+     keyline round every picture. */
+  padding: var(--hairline);
+  background-color: var(--rule-strong);
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+}
+
+html[dir="rtl"] .cut {
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut));
+}
+
+/* The photograph repeats the notch, one pixel in, so the stroke stays
+   visible along the diagonal instead of being covered by a square corner. */
+.cut img {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--cut) + var(--hairline)) 0,
+    100% calc(var(--cut) - var(--hairline)),
+    100% 100%,
+    0 100%
+  );
+}
+
+html[dir="rtl"] .cut img {
+  clip-path: polygon(
+    calc(var(--cut) - var(--hairline)) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 calc(var(--cut) - var(--hairline))
+  );
+}
+
+/* An interface icon: Phosphor's, drawn in the colour of the text around it.
+   See assets/icons/PHOSPHOR-LICENSE.txt. */
+.icon {
+  display: inline-block;
+  flex: none;
+  aspect-ratio: 1;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.icon--list { --icon: url("../icons/list.svg"); }
+.icon--to-top { --icon: url("../icons/arrow-up.svg"); }
+.icon--to-right { --icon: url("../icons/arrow-right.svg"); }
+.icon--to-left { --icon: url("../icons/arrow-left.svg"); }
+
+.u-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: fixed;
+  z-index: var(--z-overlay);
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--print-green);
+  color: var(--paper);
+  font-size: var(--step--1);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip:focus {
+  transform: none;
+}
+
+/* --- Shell ---------------------------------------------------------------- */
+
+.shell {
+  inline-size: 100%;
+  max-inline-size: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--frame);
+}
+
+
+/* ==========================================================================
+   The bar
+   Paper ground, hairline under it, the reading line along that hairline.
+   Three things on one row and nothing else: the mark, the contents button,
+   the other language.
+   ========================================================================== */
+
+.bar {
+  position: fixed;
+  z-index: var(--z-sticky);
+  inset-block-start: 0;
+  inset-inline: 0;
+  background-color: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(14px);
+  border-block-end: var(--hairline) solid var(--rule);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .bar {
+    background-color: var(--paper);
+  }
+}
+
+.bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-block-size: var(--bar-h);
+}
+
+.bar__logo {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline-end: var(--space-2);
+  color: var(--print-green);
+}
+
+.bar__logo .bk-logo {
+  block-size: 1.125rem;
+  inline-size: auto;
+}
+
+html[lang="fa"] .bar__logo .bk-logo {
+  block-size: 1.375rem;
+}
+
+.bar__end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* A phone's bar carries a mark and three controls, and at the sizes the rest
+   of the document is set at they are more than the row holds: the labels
+   break over two lines and the mark runs into them.
+
+   The mark gives first, and gives the most. The lockup is the wordmark
+   beside the mark, five times as wide as the mark on its own, and the name
+   is on the cover, in the footer and in the tab. The controls give a little
+   after it, which is padding rather than type: a label set smaller to fit is
+   a label that has been made harder to read in order to fit.
+
+   The url() has to be written here rather than in a style attribute for the
+   reason shapes.css gives, and this file sits in the same folder as that
+   one, so the path is the same. */
+@media (max-width: 30rem) {
+  .bar__logo .bk-logo,
+  html[lang="fa"] .bar__logo .bk-logo {
+    --shape: url("../logos/logo-mark.svg");
+    --shape-ratio: 49.15 / 51.7;
+
+    block-size: 1.5rem;
+  }
+
+  .bar__inner {
+    gap: var(--space-2);
+  }
+
+  /* Forty pixels rather than forty four. Three boxes that size across a
+     phone's bar read as three buttons shouting over the mark; forty is still
+     well over the twenty four WCAG 2.5.8 asks of a target, and over the
+     thirty six the platforms ask of one in a toolbar. */
+  .bar .chip {
+    min-block-size: 2.5rem;
+    padding-inline: var(--space-3);
+  }
+
+  /* And the bar's own margin comes in with them. */
+  .bar__inner {
+    padding-inline: var(--space-4);
+  }
+}
+
+/* The contents are a list icon on a phone, and the word is kept for the
+   ears only. With the way to the products the bar has four controls, and
+   in English, whose labels are the longer, four words and the mark are
+   more than a phone's row holds at any padding. The list is the one of the
+   four that a mark says as well as a word: the language, the view and the
+   products are a word or they are a guess. */
+.chip--contents .icon {
+  display: none;
+  inline-size: 1.25rem;
+}
+
+@media (max-width: 30rem) {
+  .chip--contents .icon {
+    display: inline-block;
+  }
+
+  .chip--contents .chip__label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .bar .chip--contents {
+    min-inline-size: 2.5rem;
+    padding-inline: 0;
+  }
+}
+
+/* The narrowest phones, where the longest of the labels ("Sideways") still
+   leaves the row a few pixels short. The mark's own margin and the bar's
+   come in a little too, never the type. */
+@media (max-width: 22.5rem) {
+  .bar .chip {
+    padding-inline: var(--space-2);
+  }
+
+  .bar .chip--contents {
+    min-inline-size: 2.25rem;
+    padding-inline: 0;
+  }
+
+  .bar__inner {
+    padding-inline: var(--space-3);
+  }
+
+  .bar__end {
+    gap: var(--space-1);
+  }
+
+  .bar__logo {
+    padding-inline-end: 0;
+  }
+}
+
+/* --- The view switch ------------------------------------------------------
+   Belongs to the sideways version; delete this block with it, see docs/WIDE.md.
+
+   Offered only where there are two versions to switch between. The sideways
+   stylesheet lays its track out inside this same gate and below it the two
+   builds render identically, so a switch there would swap a document for a
+   copy of itself, and cost the bar a third of its room to do it. */
+
+.chip[data-view-swap] {
+  display: none;
+}
+
+@media (min-width: 20rem) and (min-height: 34rem) {
+  .chip[data-view-swap] {
+    display: inline-flex;
+  }
+}
+
+/* Every control in the bar is the same chip. 44px tall, the size the
+   platforms ask of a touch target and nearly twice the 24px WCAG 2.5.8
+   does, and the border measures 3.5:1 on paper so the boundary itself is
+   visible at low contrast sensitivity. */
+/* A control takes the brand's tag: a notch off the top of the trailing
+   edge, the corner the catalogue's green tags and every framed photograph
+   are cut at, so a button and a picture are cut the same way round.
+   clip-path has no logical keywords, so rtl mirrors it.
+
+   The outline is the control's own ground showing round a fill one stroke
+   in, so it runs along the diagonal as well as the four straight edges: a
+   border would be clipped away at the notch, and so would an outline,
+   which is why the focus ring here is the stroke itself, drawn thicker. */
+.chip {
+  --notch: 0.75rem;
+  --stroke: var(--hairline);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
+  padding-inline: var(--space-4);
+  border: 0;
+  background-color: var(--rule-strong);
+  color: var(--print-green);
+  font: inherit;
+  font-size: var(--step--1);
+  line-height: 1;
+  /* A control is one line. Broken over two it stops reading as a button and
+     starts reading as a sentence that has been put in a box. */
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+  transition: background-color var(--dur-fast) linear,
+              color var(--dur-fast) linear;
+}
+
+html[dir="rtl"] .chip {
+  clip-path: polygon(var(--notch) 0, 100% 0, 100% 100%, 0 100%, 0 var(--notch));
+}
+
+.chip::before {
+  content: "";
+  position: absolute;
+  inset: var(--stroke);
+  z-index: -1;
+  background-color: var(--paper);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--notch) + var(--stroke)) 0,
+    100% calc(var(--notch) - var(--stroke)),
+    100% 100%,
+    0 100%
+  );
+  transition: background-color var(--dur-fast) linear;
+}
+
+html[dir="rtl"] .chip::before {
+  clip-path: polygon(
+    calc(var(--notch) - var(--stroke)) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 calc(var(--notch) - var(--stroke))
+  );
+}
+
+html[lang="en"] .chip {
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.chip:hover {
+  background-color: var(--print-green);
+  color: var(--paper);
+}
+
+.chip:hover::before {
+  background-color: var(--print-green);
+}
+
+.chip:focus-visible {
+  --stroke: 2px;
+
+  outline: none;
+  background-color: var(--print-green);
+}
+
+.chip:active {
+  transform: translateY(1px);
+}
+
+/* On the narrowest phones the bar is the logo plus two chips in 280px of
+   room. The target stays 44px tall; only the side padding gives way. */
+@media (max-width: 22.5rem) {
+  .chip {
+    padding-inline: var(--space-3);
+  }
+}
+
+/* The reading line. Pure CSS where the browser has a scroll timeline; where
+   it does not, there is simply no line, which costs the page nothing. */
+.progress {
+  position: absolute;
+  inset-block-end: calc(var(--hairline) * -1);
+  inset-inline-start: 0;
+  block-size: 2px;
+  inline-size: 100%;
+  background-color: var(--print-green);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+html[dir="rtl"] .progress {
+  transform-origin: right center;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progress {
+      animation: progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+
+/* ==========================================================================
+   Contents
+   A native dialog, so the focus trap, the inert background and Escape all
+   come from the browser rather than from script.
+   ========================================================================== */
+
+.contents {
+  inline-size: min(100%, 34rem);
+  max-inline-size: none;
+  max-block-size: 100dvh;
+  block-size: 100dvh;
+  margin: 0;
+  /* Opens against the end of the bar, which is the side the button it came
+     from sits on. Logical, so it is the left edge in the Persian document
+     and the right edge in the English one. */
+  margin-inline-start: auto;
+  padding: 0;
+  border: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+.contents::backdrop {
+  background-color: rgb(16 20 18 / 0.5);
+}
+
+.contents__inner {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+}
+
+.contents__head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-block-size: var(--bar-h);
+  padding-inline: var(--frame);
+}
+
+.contents__list {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: var(--space-2) var(--frame) var(--space-16);
+  list-style: none;
+}
+
+/* No rules, no numbers, no page references. A list of places to go, set in
+   the same face as the headings they lead to, and the one being read is the
+   only one in green. */
+.contents__list a {
+  display: block;
+  padding-block: var(--space-2);
+  color: var(--ink-muted);
+  font-size: var(--step-1);
+  line-height: 1.3;
+  text-decoration: none;
+  transition: color var(--dur-fast) linear;
+}
+
+html[lang="fa"] .contents__list a {
+  font-weight: 500;
+}
+
+.contents__list a:hover,
+.contents__list a:focus-visible {
+  color: var(--ink);
+}
+
+.contents__list a[aria-current] {
+  color: var(--print-green);
+}
+
+html[lang="fa"] .contents__list a[aria-current] {
+  font-weight: 700;
+}
+
+html[lang="en"] .contents__list a[aria-current] {
+  font-weight: 600;
+}
+
+
+/* ==========================================================================
+   Sections
+   Every section is a band of the scroll. Vertical rhythm is set once, here,
+   and no section sets its own top and bottom padding.
+   ========================================================================== */
+
+.doc {
+  padding-block-start: var(--bar-h);
+  /* --bleed is measured in vw, which counts the classic scrollbar the layout
+     does not get. The difference is a few pixels of a photograph nobody was
+     going to see; clipping it is cheaper than reserving a gutter for it.
+     `clip` rather than `hidden`: it establishes no scroll container, so the
+     sticky column on the stone sections still sticks to the window. */
+  overflow-x: clip;
+}
+
+.sec {
+  position: relative;
+  padding-block: clamp(4rem, 11vw, 9rem);
+}
+
+.sec--flush {
+  padding-block: 0;
+}
+
+/* The hairline between two consecutive text sections stands in for the page
+   turn. Plates and dividers carry their own edge, so a section next to one
+   is skipped, on either side of it. Both sides are in the one selector:
+   written as a second rule setting `content: none`, the skip weighed less
+   than the rule it was skipping, and every section after a plate or a
+   divider drew the line all the same. */
+.sec:not(.sec--plate, .sec--divider, .sec--cover) + .sec:not(.sec--plate, .sec--divider, .sec--cover)::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: var(--frame);
+  block-size: var(--hairline);
+  background-color: var(--rule);
+}
+
+
+/* --- Type ----------------------------------------------------------------
+   The print sets its headings in green and its body in near black, Persian
+   justified, Latin justified with the last line free. Both are reproduced. */
+
+.title {
+  color: var(--print-green);
+  font-size: var(--step-4);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+html[lang="fa"] .title {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+html[lang="en"] .title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin-block-start: var(--space-3);
+  color: var(--print-green);
+  font-size: var(--step-1);
+}
+
+html[lang="fa"] .subtitle {
+  font-weight: 500;
+}
+
+.heading {
+  margin-block-start: var(--space-6);
+  color: var(--print-green);
+  font-size: var(--step-2);
+}
+
+html[lang="fa"] .heading {
+  font-weight: 700;
+}
+
+html[lang="en"] .heading {
+  font-weight: 600;
+}
+
+.prose {
+  max-inline-size: var(--measure);
+}
+
+.prose p + p {
+  margin-block-start: var(--space-3);
+}
+
+/* Running text is justified, in both languages and in every reading of the
+   page: Persian flush to both edges with its last line ranged right, Latin
+   with its last line ranged left. The space a line has over goes between
+   its words and nowhere else. Persian is never drawn out between its
+   letters, by kashida or by tracking, which stretches a word through its
+   joins; Latin is hyphenated, as a justified column in print is, so that a
+   short line does not open into holes between its words. A word is broken
+   only if it has six letters or more, with two left behind and three
+   carried over.
+
+   Display type is not justified. A title, a banner, a name and the pull
+   quote are set a few words to the line at a size where the space a line
+   has over cannot be hidden between so few words, so they range from the
+   start, as headings do. */
+.prose p,
+.people__lede p,
+.list li,
+.benefit p,
+.slabs__uses-intro {
+  text-align: justify;
+  text-align-last: start;
+  text-justify: inter-word;
+}
+
+html[lang="fa"] .prose p,
+html[lang="fa"] .people__lede p,
+html[lang="fa"] .list li,
+html[lang="fa"] .benefit p,
+html[lang="fa"] .slabs__uses-intro {
+  /* Persian sets solid: no tracking, and the leading carries the line. */
+  letter-spacing: 0;
+  hyphens: none;
+}
+
+html[lang="en"] .prose p,
+html[lang="en"] .people__lede p,
+html[lang="en"] .list li,
+html[lang="en"] .benefit p,
+html[lang="en"] .slabs__uses-intro {
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  hyphenate-limit-chars: 6 2 3;
+  -webkit-hyphenate-limit-before: 2;
+  -webkit-hyphenate-limit-after: 3;
+  /* Never more than two broken lines running. */
+  -webkit-hyphenate-limit-lines: 2;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.3;
+}
+
+html[lang="fa"] .lede {
+  line-height: 1.35;
+}
+
+/* The bullet is a small green square, which is the mark the print uses. */
+.list {
+  margin-block-start: var(--space-4);
+  padding: 0;
+  list-style: none;
+  max-inline-size: var(--measure);
+}
+
+.list li {
+  position: relative;
+  padding-inline-start: 1.35em;
+}
+
+.list li + li {
+  margin-block-start: var(--space-2);
+}
+
+/* Centred on the first line, whatever the leading. */
+.list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: calc(0.5lh - 0.2em);
+  inline-size: 0.4em;
+  block-size: 0.4em;
+  background-color: var(--print-green);
+}
+
+.list strong {
+  font-weight: 700;
+}
+
+/* On a phone the items of a list sit on each other and on the title over
+   them: at a phone's measure most are a line long, and spaced like
+   paragraphs they read as separate sentences rather than as one list. */
+@media (max-width: 47.9375rem) {
+  .title + .list {
+    margin-block-start: var(--space-3);
+  }
+
+  .list li + li {
+    margin-block-start: var(--space-1);
+  }
+
+  html[lang="fa"] .list li {
+    line-height: 1.35;
+  }
+}
+
+
+/* On a phone the writing stands a tenth of the screen in from either edge,
+   as the owner set it: at the page's frame alone the type ran to within a
+   finger of the glass. The sections of photographs keep the frame, and the
+   bleed is written again beside it so a photograph that runs off the edge
+   still runs off it. The sideways deck does the same with its own frame
+   (catalogue-wide.css). */
+@media (max-width: 40rem) {
+  html:not([data-axis="inline"]) .sec:not(.sec--plate, .sec--divider, .sec--cover) {
+    --frame: max(var(--gutter), 10vw);
+    --bleed: calc(var(--frame) + max(0px, (100vw - var(--shell)) / 2));
+  }
+}
+
+
+/* ==========================================================================
+   Cover
+   The print cover is a white page with two words low on it. On screen the
+   mark comes with it, because a link sent to someone has to say whose
+   catalogue it is before they scroll.
+   ========================================================================== */
+
+.cover {
+  display: grid;
+  align-content: center;
+  min-block-size: calc(100dvh - var(--bar-h));
+  /* A shade below the optical centre, which is where the printed cover sets
+     its line. Small, because anything more leaves the top of the window
+     reading as an empty band rather than as margin. */
+  padding-block: var(--space-16) var(--space-8);
+}
+
+.cover__mark {
+  color: var(--print-green);
+  inline-size: min(40rem, 78vw);
+  /* An h1 carrying a mask, so none of the heading defaults apply. */
+  font-size: inherit;
+  line-height: 0;
+}
+
+html[lang="fa"] .cover__mark {
+  inline-size: min(28rem, 68vw);
+}
+
+.cover__line {
+  margin-block-start: clamp(1.75rem, 4.5vh, 3rem);
+  color: var(--print-green);
+  font-family: var(--font-en);
+  font-size: var(--step-4);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.cover__rule {
+  margin-block-start: clamp(1.75rem, 4.5vh, 3rem);
+  inline-size: min(26rem, 44vw);
+  block-size: var(--border-strong);
+  background-color: var(--print-green);
+  transform-origin: left center;
+}
+
+html[dir="rtl"] .cover__rule {
+  transform-origin: right center;
+}
+
+
+/* ==========================================================================
+   Divider
+   The printed spread is a solid green page facing a white one carrying the
+   section title. Side by side above 60rem, stacked below it.
+   ========================================================================== */
+
+.divider {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-block-size: calc(100dvh - var(--bar-h));
+  overflow: clip;
+}
+
+.divider__green {
+  background-color: var(--print-green);
+  min-block-size: 30vh;
+}
+
+.divider__face {
+  display: grid;
+  align-content: center;
+  padding: clamp(3rem, 9vw, 7rem) var(--frame);
+}
+
+/* The one place in the document set larger than the section titles. A
+   printed section opener is a whole page carrying four words. */
+.divider__title {
+  color: var(--print-green);
+  font-size: clamp(2.5rem, 1.3rem + 4.4vw, 5.25rem);
+  line-height: 1.12;
+}
+
+html[lang="fa"] .divider__title {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+html[lang="en"] .divider__title {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.divider__subtitle {
+  margin-block-start: var(--space-5);
+  color: var(--print-green);
+  font-size: var(--step-2);
+}
+
+html[lang="fa"] .divider__subtitle {
+  font-weight: 500;
+}
+
+@media (min-width: 60rem) {
+  .divider {
+    grid-template-columns: 5fr 7fr;
+  }
+
+  .divider__green {
+    min-block-size: 0;
+  }
+
+  .divider__face {
+    padding-inline: clamp(3rem, 7vw, 7rem);
+    max-inline-size: calc(var(--shell) / 12 * 7);
+  }
+}
+
+
+/* ==========================================================================
+   Feature
+   Photograph and text. Three compositions, because the print uses three:
+   the photograph bleeding off the outer edge with the text beside it, the
+   same flipped, and the short caption-length block that sits under a
+   photograph running the full width.
+   ========================================================================== */
+
+.feature {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.feature__text {
+  padding-inline: var(--frame);
+}
+
+.feature__inner {
+  max-inline-size: calc(var(--shell) / 2);
+  margin-inline: auto;
+}
+
+.feature__figure {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+}
+
+.feature__figure img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.feature--mono img {
+  filter: grayscale(1);
+}
+
+@media (min-width: 60rem) {
+  /* The split falls on the middle of the shell. The photograph gets that
+     half plus everything outside the shell on its side, so it reads as the
+     larger of the two without the type paying for it. */
+  .feature {
+    grid-template-columns: calc(var(--bleed) + var(--half)) minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
+  }
+
+  .feature__figure {
+    aspect-ratio: auto;
+    block-size: min(84vh, 50rem);
+    /* Off the outer edge of the window, the way the photograph bleeds off
+       the trimmed edge of the printed spread. */
+    margin-inline-start: calc(var(--bleed) * -1);
+  }
+
+  .feature__text {
+    padding-inline-start: clamp(2rem, 3.5vw, 3.5rem);
+    padding-inline-end: var(--bleed);
+  }
+
+  .feature__inner {
+    margin-inline: 0;
+    max-inline-size: none;
+  }
+
+  /* Flipped, the photograph runs off the other edge and the type sits
+     against the outer margin on the side it came from. */
+  .feature--flip {
+    grid-template-columns: minmax(0, 1fr) calc(var(--bleed) + var(--half));
+  }
+
+  .feature--flip .feature__figure {
+    order: 1;
+    margin-inline-start: 0;
+    margin-inline-end: calc(var(--bleed) * -1);
+  }
+
+  .feature--flip .feature__text {
+    padding-inline-start: var(--bleed);
+    padding-inline-end: clamp(2rem, 3.5vw, 3.5rem);
+  }
+}
+
+/* The lead composition: one wide photograph, then a short block of type set
+   in from the outer edge. Page 8 of the print is exactly this. */
+.feature--lead {
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.feature--lead .feature__figure {
+  aspect-ratio: 16 / 9;
+}
+
+@media (min-width: 60rem) {
+  .feature--lead {
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .feature--lead .feature__figure {
+    block-size: min(76vh, 46rem);
+    aspect-ratio: auto;
+    /* The lead figure already spans the whole grid, so it does not take the
+       one sided bleed the two column compositions use. */
+    margin-inline-start: 0;
+  }
+
+  .feature--lead .feature__text {
+    padding-inline: var(--frame);
+  }
+
+  .feature--lead .feature__inner {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    max-inline-size: var(--shell);
+    margin-inline: auto;
+  }
+
+  .feature--lead .feature__inner > * {
+    grid-column: 2;
+  }
+}
+
+
+/* ==========================================================================
+   Columns
+   The advantages spread: three blocks of type in two columns, with the band
+   of eight photographs the print runs down the gutter between them.
+   ========================================================================== */
+
+.columns__text {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.columns__block .title {
+  font-size: var(--step-2);
+}
+
+.columns__block .prose {
+  margin-block-start: var(--space-5);
+}
+
+.columns__block .list + .prose {
+  margin-block-start: var(--space-6);
+}
+
+@media (min-width: 60rem) {
+  .columns__text {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  /* The third block sits alone under the first, the way the print runs it
+     below the advantages list on the same page. */
+  .columns__block:nth-child(2) {
+    grid-row: span 2;
+  }
+}
+
+/* The print sets these eight down the gutter of the spread with white
+   between them rather than butted together, which is also what lets the cut
+   corner read: a notch against the page is a shape, a notch against the next
+   photograph is a chip out of it. */
+.band {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  margin-block-start: clamp(3rem, 7vw, 5.5rem);
+}
+
+.band figure {
+  --cut: 1.25rem;
+
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  background-color: var(--bone-soft);
+}
+
+.band img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 48rem) {
+  .band {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+
+/* ==========================================================================
+   Plate
+   One photograph, edge to edge, the height of the viewport. The print gives
+   a whole spread to each of these and so does the scroll.
+   ========================================================================== */
+
+.plate {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  block-size: min(100dvh, 60rem);
+  background-color: var(--ink);
+}
+
+.plate img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.plate--mono img {
+  filter: grayscale(1);
+}
+
+
+/* ==========================================================================
+   People
+   A green tag, the lede under it, then one row per person: portrait to the
+   outer edge, name and biography beside it. The first generation is one
+   portrait short; that row simply runs the full width rather than leaving a
+   hole where a photograph should be.
+   ========================================================================== */
+
+.tag {
+  display: inline-block;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--print-green);
+  color: var(--paper);
+  font-size: var(--step-1);
+  /* The angled corner is off the top of the trailing edge, the corner every
+     photograph's frame is cut at, so the banner and the portraits under it
+     are cut the same way round. clip-path has no logical keywords, so rtl
+     mirrors it. */
+  clip-path: polygon(0 0, calc(100% - 0.9rem) 0, 100% 0.9rem, 100% 100%, 0 100%);
+}
+
+html[dir="rtl"] .tag {
+  clip-path: polygon(0.9rem 0, 100% 0, 100% 100%, 0 100%, 0 0.9rem);
+}
+
+html[lang="fa"] .tag {
+  font-weight: 700;
+}
+
+html[lang="en"] .tag {
+  font-weight: 600;
+}
+
+.people__lede {
+  margin-block-start: var(--space-6);
+  max-inline-size: 46ch;
+}
+
+.people__lede p {
+  white-space: pre-line;
+}
+
+.people__lede p + p {
+  margin-block-start: var(--space-3);
+  color: var(--ink-muted);
+}
+
+/* A sentence and the two names it introduces, one short block under the
+   banner, and led closer than a paragraph of running text: at the lede's
+   own leading its four short lines stood apart from each other as four
+   separate things. */
+html[lang="fa"] .people__lede {
+  line-height: 1.35;
+}
+
+html[lang="en"] .people__lede {
+  line-height: 1.3;
+}
+
+.people__list {
+  margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.person {
+  display: grid;
+  gap: var(--space-6);
+  padding-block-start: clamp(2rem, 4vw, 3rem);
+  border-block-start: var(--hairline) solid var(--rule);
+}
+
+.person:first-child {
+  padding-block-start: 0;
+  border-block-start: 0;
+}
+
+.person__portrait {
+  --cut: 1.5rem;
+
+  inline-size: 8.5rem;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background-color: var(--bone-soft);
+}
+
+.person__portrait img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.person__name {
+  color: var(--print-green);
+  font-size: var(--step-1);
+}
+
+html[lang="fa"] .person__name {
+  font-weight: 700;
+}
+
+html[lang="en"] .person__name {
+  font-weight: 600;
+}
+
+.person__bio {
+  margin-block-start: var(--space-4);
+}
+
+@media (min-width: 48rem) {
+  .person {
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+
+  .person__portrait {
+    inline-size: 100%;
+  }
+
+  /* Nothing in the data is short a portrait now, but a row that loses one
+     should close up rather than leave an empty frame. */
+  .person--no-portrait {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .person--no-portrait .person__body {
+    max-inline-size: var(--measure);
+  }
+}
+
+/* The two people of a generation stand together, as they do in the print.
+   The rule that separated them stacked becomes the rule above the row. */
+@media (min-width: 62rem) {
+  .people__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .person:nth-child(-n + 2) {
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
+}
+
+
+/* ==========================================================================
+   Slabs
+   The twelve millimetre spread. Long for one column and short for three, so
+   it runs as two: the product statement and its four named advantages on one
+   side, the environmental case, the uses, the quotation and the yield note
+   on the other.
+   ========================================================================== */
+
+.slabs {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* The spread is written in three parts. Here the second and the third stand
+   one above the other, which makes them the right hand column, so the element
+   that wraps them is that column and is set like one. Sideways each part has a
+   column of its own and the wrapper is dissolved. */
+.slabs__col,
+.slabs__side {
+  display: grid;
+  align-content: start;
+  gap: var(--space-6);
+}
+
+.slabs__benefits {
+  display: grid;
+  gap: var(--space-6);
+  margin-block-start: var(--space-4);
+}
+
+.benefit__title {
+  color: var(--print-green);
+  font-size: var(--step-1);
+}
+
+html[lang="fa"] .benefit__title {
+  font-weight: 700;
+}
+
+html[lang="en"] .benefit__title {
+  font-weight: 600;
+}
+
+.benefit p {
+  margin-block-start: var(--space-2);
+}
+
+/* The pull quote is set large and green in the print, with no rule and no
+   quotation mark around it. */
+.pull {
+  margin: var(--space-4) 0;
+  color: var(--print-green);
+  font-size: var(--step-2);
+  line-height: 1.3;
+}
+
+html[lang="fa"] .pull {
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+html[lang="en"] .pull {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.slabs__uses-intro {
+  margin-block-start: var(--space-2);
+}
+
+@media (min-width: 60rem) {
+  .slabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  .slabs .prose {
+    max-inline-size: none;
+  }
+}
+
+
+/* ==========================================================================
+   Stone
+   Granite and quartzite. Title and text in a narrow column, three
+   photographs in an asymmetric grid beside it: one tall, two square under
+   it, exactly the arrangement on pages 30 and 31.
+   ========================================================================== */
+
+.stone {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+}
+
+.stone__figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.stone__figures figure {
+  --cut: 1.5rem;
+
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  background-color: var(--bone-soft);
+  aspect-ratio: 1;
+}
+
+/* Every photograph in these two sections is a portrait. Stacked, the first
+   one runs across both columns and stays portrait: a landscape crop of it
+   cuts the top and bottom off the slab. */
+.stone__figures figure:first-child {
+  grid-column: span 2;
+  aspect-ratio: 3 / 4;
+}
+
+.stone__figures img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 60rem) {
+  .stone {
+    grid-template-columns: 4fr 7fr;
+    gap: clamp(2.5rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .stone__text {
+    position: sticky;
+    inset-block-start: calc(var(--bar-h) + clamp(2rem, 6vw, 4rem));
+  }
+
+  /* The two square figures set the height of the block and the tall one
+     stretches to match, so the three line up top and bottom rather than
+     each finding its own height. */
+  .stone__figures figure:first-child {
+    grid-column: span 1;
+    grid-row: span 2;
+    aspect-ratio: auto;
+    block-size: 100%;
+  }
+
+  /* Flipped, the photographs lead and the type follows. The columns swap
+     with them, so the type keeps its narrow measure either way. */
+  .stone--flip {
+    grid-template-columns: 7fr 4fr;
+  }
+
+  .stone--flip .stone__text {
+    order: 1;
+  }
+}
+
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.foot {
+  --cut: clamp(1.25rem, 3.5vw, 2.75rem);
+
+  position: relative;
+  overflow: hidden;
+  /* Pulled up by exactly the cut, so the wedge the angle takes out of the
+     panel is filled by the last photograph rather than by a white gap. */
+  margin-block-start: calc(var(--cut) * -1);
+  padding-block: calc(clamp(2rem, 3.5vw, 2.75rem) + var(--cut)) clamp(2rem, 3.5vw, 2.75rem);
+  background-color: var(--print-green);
+  color: var(--paper);
+  /* The angled edge the stationery cuts into a green panel. It leans the
+     other way in the Persian document so the rise always follows the
+     reading direction. */
+  clip-path: polygon(0 var(--cut), 100% 0, 100% 100%, 0 100%);
+}
+
+html[dir="rtl"] .foot {
+  clip-path: polygon(0 0, 100% var(--cut), 100% 100%, 0 100%);
+}
+
+@media (max-width: 40rem) {
+  .foot {
+    --cut: 0px;
+  }
+}
+
+/* One brand shape, tone on tone, bleeding off the top edge. The guide only
+   ever puts a shape on a green panel, and only one per view. */
+.foot__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 8vw, 6rem);
+}
+
+.foot__brand {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+}
+
+.foot .bk-logo {
+  block-size: 1.5rem;
+  inline-size: auto;
+  color: var(--paper);
+}
+
+html[lang="fa"] .foot .bk-logo {
+  block-size: 1.75rem;
+}
+
+.foot a {
+  color: var(--paper);
+}
+
+.foot :focus-visible {
+  outline-color: var(--paper);
+}
+
+.foot__title {
+  margin-block-end: var(--space-4);
+  color: var(--paper);
+  font-size: var(--step-0);
+}
+
+/* Tracking is for the Latin only: spaced out, Persian is pulled apart at the
+   joins between its letters. */
+html[lang="en"] .foot__title {
+  letter-spacing: 0.02em;
+}
+
+html[lang="fa"] .foot__title {
+  font-weight: 700;
+}
+
+html[lang="en"] .foot__title {
+  font-weight: 600;
+}
+
+.foot__contact {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+  /* <address> is italic by default, which neither brand face is drawn for. */
+  font-style: normal;
+}
+
+/* The address is the one paragraph here, so it takes body size and a
+   measure short enough to break where the address itself does. */
+.foot__address {
+  max-inline-size: 34ch;
+  font-size: var(--step--1);
+  line-height: 1.35;
+  color: var(--on-inverse-muted);
+}
+
+html[lang="fa"] .foot__address {
+  line-height: 1.35;
+}
+
+/* The numbers are what a reader comes to the footer for, so they are set
+   at reading size rather than as fine print, and sit on one line. */
+.foot__tels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+.foot__contact a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.75rem;
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.foot__tel {
+  font-size: var(--step-1);
+  font-variant-numeric: tabular-nums;
+  /* Persian digits, but the number still reads left to right. */
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+html[lang="fa"] .foot__tel {
+  font-weight: 500;
+}
+
+html[lang="en"] .foot__tel {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.foot__contact a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.foot__social {
+  display: flex;
+  gap: var(--space-2);
+  margin-block-start: var(--space-4);
+}
+
+/* A 44px target with the mark drawn inside it, so the icon can stay small
+   without the thing being hard to hit. */
+.foot__social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border: var(--hairline) solid var(--rule-inverse);
+  transition: background-color var(--dur-fast) linear,
+              border-color var(--dur-fast) linear;
+}
+
+.foot__social a:hover {
+  background-color: var(--paper);
+  border-color: var(--paper);
+  color: var(--print-green);
+}
+
+.foot__social .bk-icon {
+  inline-size: 1.125rem;
+}
+
+.foot__site {
+  font-size: var(--step--1);
+}
+
+/* The way back to where the catalogue begins, the last thing in it: the
+   brand's tag in paper on the footer's green, the notch off the top of its
+   trailing edge, with the arrow pointing the way the page will go. */
+.to-start {
+  --notch: 0.9rem;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  align-self: flex-end;
+  min-block-size: 3rem;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--paper);
+  font-size: var(--step-0);
+  line-height: 1.3;
+  text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+  transition: background-color var(--dur-fast) linear;
+}
+
+html[dir="rtl"] .to-start {
+  clip-path: polygon(var(--notch) 0, 100% 0, 100% 100%, 0 100%, 0 var(--notch));
+}
+
+.foot .to-start {
+  color: var(--print-green);
+}
+
+html[lang="fa"] .to-start {
+  font-weight: 700;
+}
+
+html[lang="en"] .to-start {
+  font-weight: 600;
+}
+
+.to-start .icon {
+  inline-size: 1.25rem;
+}
+
+.to-start:hover {
+  background-color: var(--bone-soft);
+}
+
+/* Inside the tag, since the notch would cut an outline outside it away. */
+.foot .to-start:focus-visible {
+  outline: 2px solid var(--print-green);
+  outline-offset: -5px;
+}
+
+/* On its own rather than inside a sentence, so WCAG 2.5.8 applies: the
+   target has to reach 24px even though the line box does not. */
+.foot__site a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.75rem;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.25em;
+}
+
+
+/* ==========================================================================
+   The photograph viewer
+
+   Only offered once the script that runs it is in the page: html.has-lightbox
+   is the last thing lightbox.js does. Until then a photograph is a picture
+   and nothing invites a click on it.
+   ========================================================================== */
+
+/* The button sits over the whole figure, so the photograph is the target.
+   It carries no visible chrome of its own; the figure's own scale on hover
+   is the affordance, and the focus ring is the keyboard's. */
+.lb-open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+html:not(.has-lightbox) .lb-open {
+  display: none;
+}
+
+.has-lightbox .zoomable {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* `scale`, not a transform: the transform is the photograph's settle as
+     it is uncovered, and the rule that uncovers it has the weight to decide
+     how a transform moves. A property of its own keeps the two curves apart. */
+  .has-lightbox .zoomable img {
+    transition: scale var(--dur-lean) var(--ease-lean), filter var(--dur-lean) var(--ease-lean);
+  }
+
+  .has-lightbox .zoomable:has(.lb-open:hover) img,
+  .has-lightbox .zoomable:has(.lb-open:focus-visible) img {
+    scale: 1.025;
+  }
+}
+
+.lb {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  block-size: 100dvh;
+  max-block-size: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: rgb(8 12 10 / 0.97);
+  color: var(--paper);
+  overflow: hidden;
+}
+
+.lb::backdrop {
+  background-color: rgb(8 12 10 / 0.97);
+}
+
+.lb__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  /* One row and one column, both a definite fraction of the stage. Left to
+     size themselves from their content the track is indefinite, and
+     max-block-size: 100% on the picture then resolves against nothing and
+     behaves as none, so a portrait photograph runs off the bottom of the
+     window instead of fitting. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  /* One picture and no text, so it has no reading direction to keep. */
+  direction: ltr;
+  overflow: hidden;
+  touch-action: none;
+  cursor: zoom-in;
+}
+
+.lb__stage.is-zoomed {
+  cursor: grab;
+}
+
+.lb__stage.is-dragging {
+  cursor: grabbing;
+}
+
+.lb__img {
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  inline-size: auto;
+  block-size: auto;
+  min-inline-size: 0;
+  min-block-size: 0;
+  object-fit: contain;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Between one photograph and the next. The transition itself is written
+   inline by the script, alongside the transform. */
+.lb__img.is-loading {
+  opacity: 0;
+}
+
+/* Head and foot float over the picture. Both are a gradient rather than a
+   bar so the photograph runs behind them uninterrupted. */
+.lb__bar {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) clamp(1rem, 3vw, 2rem);
+  pointer-events: none;
+}
+
+.lb__bar > * {
+  pointer-events: auto;
+}
+
+.lb__bar--top {
+  inset-block-start: 0;
+  justify-content: flex-end;
+  background: linear-gradient(to bottom, rgb(8 12 10 / 0.85), transparent);
+}
+
+.lb__bar--bottom {
+  inset-block-end: 0;
+  justify-content: space-between;
+  background: linear-gradient(to top, rgb(8 12 10 / 0.85), transparent);
+}
+
+.lb__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lb__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: var(--hairline) solid rgb(255 255 255 / 0.35);
+  background: none;
+  color: var(--paper);
+  font: inherit;
+  font-size: var(--step-1);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) linear,
+              border-color var(--dur-fast) linear,
+              color var(--dur-fast) linear,
+              opacity var(--dur-fast) linear;
+}
+
+.lb__btn:hover:not(:disabled) {
+  background-color: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
+
+.lb__btn:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.lb :focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+
+/* The only thing printed over the picture: where you are in the set. */
+.lb__counter {
+  font-size: var(--step--2);
+  color: rgb(255 255 255 / 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================================================
+   Motion
+   Four moves, each with a job.
+
+     reveal   a block arrives as the scroll reaches it, and arrives again on
+              the way back up, because the catalogue is read in both
+              directions
+     words    a title sets itself one word at a time, so the eye lands on the
+              heading before the paragraph under it
+     place    a photograph is uncovered from its leading edge and settles out
+              of a slight overscale, the way a plate is laid onto a page
+     drift    a full bleed photograph moves against the scroll, which is what
+              turns it from a picture into a window
+
+   The first three are IntersectionObserver plus a class. The fourth is a
+   scroll driven animation and is applied only where the browser has one, so
+   nothing anywhere depends on it to become visible. Every base state below
+   is the finished state: script adds `is-out` to hide, never the reverse, so
+   a page with no JavaScript is a complete page.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal.is-out {
+    opacity: 0;
+    transform: translateY(var(--reveal-shift, 1.5rem));
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: opacity var(--dur-reveal) var(--ease-out),
+                transform var(--dur-reveal) var(--ease-out);
+    transition-delay: calc(var(--i, 0) * var(--step-delay));
+  }
+
+  /* Words of a title. The span is the moving part; the mask around it is
+     what makes the word appear to be written rather than faded in. */
+  .js .word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    /* Persian descenders sit low and the Latin face has a deep j; the pad
+       keeps both off the mask edge. */
+    padding-block-end: 0.14em;
+    margin-block-end: -0.14em;
+  }
+
+  .js .word > span {
+    display: inline-block;
+    transform: none;
+    transition: transform var(--dur-word) var(--ease-out);
+    transition-delay: calc(var(--w, 0) * 55ms);
+  }
+
+  .js .is-out .word > span,
+  .js .word.is-out > span {
+    transform: translateY(110%);
+  }
+
+  /* A photograph is wiped open from the leading edge. clip-path has no
+     logical keyword, so the closed state is mirrored for rtl. */
+  .js .place img {
+    transform: none;
+    transition: transform 1200ms var(--ease-out), clip-path 1000ms var(--ease-out),
+                scale var(--dur-lean) var(--ease-lean);
+  }
+
+  /* The open state is a rectangle for a plain photograph and the brand's
+     notch for a framed one, which is what it was cut to and what keeps the
+     stroke visible along the diagonal. Written as an exception rather than
+     left to the cascade: `.js .place img` outweighs `.cut img`, so a framed
+     photograph in the Latin document was having its corner squared off and
+     the stroke covered. The Persian one was spared only because its own cut
+     rule carries `html[dir="rtl"]` and so outweighed this one in turn. */
+  .js .place:not(.cut) img {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .js .place.is-out img {
+    transform: scale(1.07);
+    clip-path: inset(0 100% 0 0);
+  }
+
+  /* `html.js[dir="rtl"]`, one element: the class is on <html>, so the
+     descendant form `html[dir="rtl"] .js` never matches anything. */
+  html.js[dir="rtl"] .place.is-out img {
+    clip-path: inset(0 0 0 100%);
+  }
+
+  /* The cover sets itself on load. Keyframes rather than a class, so the
+     opening of the document never waits on the observer script. */
+  .js .cover__mark,
+  .js .cover__line {
+    animation: rise 1000ms var(--ease-out) both;
+  }
+
+  .js .cover__line {
+    animation-delay: 160ms;
+  }
+
+  .js .cover__rule {
+    animation: draw 1300ms var(--ease-out) 340ms both;
+  }
+
+  /* The green half of a divider wipes in. A clip rather than a transform,
+     so the panel never reaches outside the section and never widens the
+     document: stacked it opens downwards, side by side it opens from the
+     outer edge of the page, which is the edge it is printed against. */
+  .js .divider__green {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 1100ms var(--ease-out);
+  }
+
+  .js .divider.is-out .divider__green {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  @media (min-width: 60rem) {
+    .js .divider.is-out .divider__green {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    html.js[dir="rtl"] .divider.is-out .divider__green {
+      clip-path: inset(0 0 0 100%);
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Drift. Progressive enhancement only: the photograph is already in place
+   and correctly framed without it. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 48rem) {
+    .plate img,
+    .feature__figure img {
+      block-size: 116%;
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(-13.8%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip:active {
+    transform: none;
+  }
+}
+
+/* Compact toolbar controls. Touch targets retain their full height on
+   coarse pointers; desktop controls need not look like mobile buttons. */
+.bar .chip {
+  min-block-size: 2rem;
+  padding-block: 0.375rem;
+  line-height: 1.25;
+}
+@media (pointer: coarse) {
+  .bar .chip { min-block-size: 2.75rem; }
+}
+
+/* Persian joins must stay intact. Full justification necessarily distributes
+   spare width between words; start alignment avoids those rivers without
+   inserting tatweel, stretching glyphs, or breaking connected letters.
+   Pretty wrapping improves the final line where the browser supports it. */
+html[lang="fa"] .prose p,
+html[lang="fa"] .people__lede p,
+html[lang="fa"] .list li,
+html[lang="fa"] .benefit p,
+html[lang="fa"] .slabs__uses-intro {
+  text-align: start;
+  text-align-last: start;
+  text-justify: none;
+  text-wrap: pretty;
+  letter-spacing: 0;
+  word-spacing: normal;
+  line-height: 1.55;
+  hyphens: none;
+  overflow-wrap: normal;
+  word-break: normal;
+}
