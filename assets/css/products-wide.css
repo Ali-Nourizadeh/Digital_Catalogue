@@ -856,3 +856,35 @@
     }
   }
 }
+
+/* Match the text-panel breathing room when the final panel is a photograph. */
+@media (min-width: 20rem) and (min-height: 34rem) {
+  .page--stone .track > .stone-page:has(.plate:not(.plate--lead)) + .foot {
+    margin-inline-start: var(--panel-gutter);
+  }
+}
+
+/* Quiet, slim page/sideways scrollbars; scrolling itself remains enabled. */
+html, .track, .doc {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(25 80 60 / 0.28) transparent;
+}
+html::-webkit-scrollbar, .track::-webkit-scrollbar, .doc::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+html::-webkit-scrollbar-thumb, .track::-webkit-scrollbar-thumb, .doc::-webkit-scrollbar-thumb {
+  background: rgb(25 80 60 / 0.28);
+  border-radius: 4px;
+}
+html::-webkit-scrollbar-track, .track::-webkit-scrollbar-track, .doc::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-button, .track::-webkit-scrollbar-button, .doc::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+@supports selector(::-webkit-scrollbar) {
+  html, .track, .doc { scrollbar-width: auto !important; scrollbar-color: auto !important; }
+}
