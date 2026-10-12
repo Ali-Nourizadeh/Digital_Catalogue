@@ -45,4 +45,4 @@ PR #3 consolidated the current catalogue into main. PRs #2 and #4 were already m
 - `research/products/AUDIT-2026-10-12.md` and `.csv`: 99 distinct official products, source conflicts and image/download verification limits.
 - `docs/BRANCHES.md`: final branch/deployment plan.
 
-Persian prose uses natural RTL/start alignment to avoid stretched letters or inter-word gaps. Desktop controls are 32 px; coarse-pointer touch controls retain 44 px.
+Persian prose uses font-measured, bounded two-sided paragraph composition with zero letter tracking and no kashida/glyph stretching. The final line ranges right. Desktop and touch control faces are 32 px; touch hit targets retain 44 px. Current source differences and listing exclusions are documented in docs/SITE-DIFFERENCES.fa.md.

@@ -2313,3 +2313,90 @@ html[lang="fa"] .about__text p {
   line-height: 1.55;
   hyphens: none;
 }
+
+/* Taste-guided targeted refinement: preserve brand, tune optical alignment.
+   Rokh's ink sits high in its line box, so offset its content by 2 px.
+   Latin is shifted 1 px, independently of the Persian font metrics. */
+.bar .chip, .pick {
+  --optical-offset: 2px;
+  padding-block: calc(0.375rem + var(--optical-offset)) calc(0.375rem - var(--optical-offset));
+}
+html[lang="en"] .bar .chip,
+html[lang="en"] .pick,
+.bar .chip[lang="en"] { --optical-offset: 1px; }
+.bar .chip[lang="fa"] { --optical-offset: 2px; }
+
+/* A 32 px visible face within a real 44 px touch target, not a tiny mobile
+   control. Pseudo layers keep the same brand cut corner and focus stroke. */
+@media (pointer: coarse) {
+  .bar .chip {
+    min-block-size: 2.75rem;
+    clip-path: none;
+    background-color: transparent;
+  }
+  .bar .chip::after {
+    content: "";
+    position: absolute;
+    inset: 0.375rem 0;
+    z-index: -2;
+    background: var(--rule-strong);
+    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+  }
+  html[dir="rtl"] .bar .chip::after {
+    clip-path: polygon(var(--notch) 0, 100% 0, 100% 100%, 0 100%, 0 var(--notch));
+  }
+  .bar .chip::before {
+    inset-block: calc(0.375rem + var(--stroke));
+  }
+  .bar .chip:hover, .bar .chip:focus-visible { background-color: transparent; }
+  .bar .chip:hover::after, .bar .chip:focus-visible::after { background: var(--print-green); }
+  .pick {
+    position: relative;
+    isolation: isolate;
+    min-block-size: 2.75rem;
+    border: 0;
+    background: transparent;
+  }
+  .pick::before {
+    content: "";
+    position: absolute;
+    inset: 0.375rem 0;
+    z-index: -1;
+    border: var(--hairline) solid var(--rule-strong);
+    background: var(--paper);
+  }
+  .pick:hover::before { border-color: var(--print-green); }
+  .pick[aria-pressed="true"] { background: transparent; }
+  .pick[aria-pressed="true"]::before { background: var(--print-green); border-color: var(--print-green); }
+}
+
+/* Font-specific bounded composition, not a literal copy of another face's
+   InDesign values. Measure Rokh's actual spaces; keep letter joins and glyph
+   scale intact. The compositor distributes modest word-space adjustments
+   and uses a natural ending only where no bounded full line is possible. */
+html[lang="fa"] :is(.prose p, .people__lede p, .list li, .benefit p, .slabs__uses-intro, .about__text p) {
+  --fa-space-min: 0.55;
+  --fa-space-target: 1;
+  --fa-space-max: 2;
+  font-kerning: normal;
+  font-stretch: normal;
+  letter-spacing: 0;
+  word-spacing: normal;
+  line-height: 1.45;
+  text-align: justify;
+  text-align-last: right;
+  text-justify: inter-word;
+  hyphens: none;
+}
+html[lang="fa"] .fa-measuring { text-align: right !important; word-spacing: normal !important; }
+html[lang="fa"] .fa-composed { text-align: right; }
+.fa-line {
+  display: block;
+  text-align: start;
+  text-align-last: start;
+  text-justify: none;
+  white-space: normal;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+}
