@@ -283,7 +283,10 @@ if (document.documentElement.lang === "fa") import("./persian-layout.js").catch(
   back.setAttribute("aria-label", label);
   back.title = label;
   back.innerHTML = '<span class="icon icon--to-left" aria-hidden="true"></span>';
-  bar.appendChild(back);
+  var slot = document.createElement("span");
+  slot.className = "mobile-back-slot";
+  slot.appendChild(back);
+  bar.appendChild(slot);
   document.body.classList.add("has-mobile-back");
   back.addEventListener("click", function (event) {
     // Modified clicks retain the ordinary, safe listing URL.

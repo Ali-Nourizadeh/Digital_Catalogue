@@ -455,11 +455,13 @@
     new IntersectionObserver(
       function (entries) {
         var entry = entries[0];
-        behind = !entry.isIntersecting && (sideways() || entry.boundingClientRect.top < 0);
+        // A snap can leave the form exactly touching the track edge.
+        // IntersectionObserver still calls that intersecting, even with no usable area.
+        behind = entry.intersectionRatio < 0.01 && (sideways() || entry.boundingClientRect.top < 0);
         show();
       },
       // Under the bar counts as behind it. The margin has to be in pixels.
-      { rootMargin: "-" + barHeight + "px 0px 0px 0px" }
+      { rootMargin: "-" + barHeight + "px 0px 0px 0px", threshold: 0.01 }
     ).observe(form);
 
     var foot = document.querySelector(".foot");
@@ -530,7 +532,10 @@ if (document.documentElement.lang === "fa") import("./persian-layout.js").catch(
   back.setAttribute("aria-label", label);
   back.title = label;
   back.innerHTML = '<span class="icon icon--to-left" aria-hidden="true"></span>';
-  bar.appendChild(back);
+  var slot = document.createElement("span");
+  slot.className = "mobile-back-slot";
+  slot.appendChild(back);
+  bar.appendChild(slot);
   document.body.classList.add("has-mobile-back");
   back.addEventListener("click", function (event) {
     // Modified clicks retain the ordinary, safe listing URL.
