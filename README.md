@@ -51,3 +51,5 @@ Persian prose uses font-measured, bounded two-sided paragraph composition with z
 ## Completed official product specification reconciliation
 
 All 98 Persian and 97 English product records have current visible-page Type/Origin verification (2026-10-12). Breadcrumb categories fill only genuinely absent API membership; no origin/photo inference. Evidence hashes and source URLs are in `products/data/official-source.json`; field-level changes and scope limits are in `docs/OFFICIAL-SOURCE-SYNC.fa.md` and `docs/PRODUCT-RECONCILIATION-2026-10-12.csv`.
+
+Catalogue display policy: both languages and orientations show the same verified union of 99 stones. Official per-language inventories remain FA98/EN97 in provenance data; no public source-note labels are displayed.

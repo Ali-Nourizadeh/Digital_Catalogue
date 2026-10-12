@@ -27,6 +27,31 @@
   var figures = Array.prototype.slice.call(document.querySelectorAll("[data-zoom]"));
   if (!dialog || !figures.length || typeof dialog.showModal !== "function") return;
 
+  // Vector icons share a centered viewBox: independent of Persian/Latin font metrics.
+  [
+    ['[data-lb-zoom="-1"]', 'M6 12H18'],
+    ['[data-lb-zoom="1"]', 'M6 12H18M12 6V18'],
+    ['[data-lb-close]', 'M6 6L18 18M18 6L6 18'],
+    ['[data-lb-step="-1"]', 'M15 6L9 12L15 18'],
+    ['[data-lb-step="1"]', 'M9 6L15 12L9 18']
+  ].forEach(function (entry) {
+    dialog.querySelectorAll(entry[0]).forEach(function (button) {
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '1.6');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', entry[1]);
+      svg.appendChild(path);
+      button.replaceChildren(svg);
+    });
+  });
+
   var stage = dialog.querySelector(".lb__stage");
   var view = dialog.querySelector(".lb__img");
   var counter = dialog.querySelector(".lb__counter");
