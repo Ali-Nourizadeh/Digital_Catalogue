@@ -14,7 +14,7 @@ Live site: https://ali-nourizadeh.github.io/Digital_Catalogue/
 
 Catalogue copy: `data/catalogue.json`. Shared catalogue styles: `assets/css/catalogue.css`.
 
-Product generated input: `products/data/products.json`. Product styles: `products/assets/css/products.css`. Original product research/photos: `research/products/`; display images and downloads: `products/media/` and `products/research/products/`.
+Product media/layout input: `products/data/products.json`. Current official facts and per-field provenance: `products/data/official-source.json` (see `docs/OFFICIAL-SOURCE-SYNC.fa.md` for coverage limits). Product styles: `products/assets/css/products.css`. Original product research/photos: `research/products/`; display images and downloads: `products/media/` and `products/research/products/`.
 
 ```
 node tools/build-catalogue.mjs
@@ -34,7 +34,7 @@ Generated HTML is committed. Edit data/templates rather than generated pages. No
 
 - `main`: active, combined site and builds.
 - `source-material`: original client material; preserve it.
-- `Behkooshan`, `Behkooshan-catalogue`, `Behkooshan-products`: historical designs/source branches. Do not edit or deploy from them. Keep until history/material retention is confirmed.
+- `Behkooshan`, `Behkooshan-catalogue`, `Behkooshan-products`: historical designs/source branches. Keep as compatibility branches while Pages still uses the catalogue branch; mirror release fixes until workflow migration is authorized. Keep until history/material retention is confirmed.
 - `fix/catalogue-layout-20261012`, `fix/products-audit-layout-20261012`: completed changes, safe to remove after deployment verification.
 
 PR #3 consolidated the current catalogue into main. PRs #2 and #4 were already merged. PR #1 was closed, not merged, because its earlier scaffold is obsolete.
