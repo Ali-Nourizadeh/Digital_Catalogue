@@ -40,6 +40,18 @@ const CATALOGUE = "../";
 // Official inventory allowlist; preserve research/detail routes, hide unlisted cards.
 const allowed = new Set(JSON.parse(readFileSync(join(ROOT, "data/availability.json"), "utf8")).allowedSlugs);
 const listedProducts = products.filter(p => p.category !== "quarry" && allowed.has(p.slug));
+const official = JSON.parse(readFileSync(join(ROOT, "data/official-source.json"), "utf8"));
+function hasSource(p, lang) { return !!official.items[p.slug]?.languages[lang]; }
+function sourceOf(p, lang) {
+  const record = official.items[p.slug]?.languages;
+  return record?.[lang] || record?.[lang === "fa" ? "en" : "fa"] || null;
+}
+function productsFor(lang) { return listedProducts.filter(p => hasSource(p, lang)); }
+function typeLabel(p, lang) { const src = sourceOf(p, lang); return src ? src.typeLabel : p.type_label?.[lang] || ""; }
+function countryOf(p, lang) { const src = sourceOf(p, lang); return src ? src.originLabel : p.origin?.[lang] || ""; }
+function categoryLabel(p, lang) { const src = sourceOf(p, lang); return src ? src.categoryLabel : T[lang].quarry; }
+function coloursOf(p, lang) { return sourceOf(p, lang)?.colourKeys || []; }
+
 
 /* --------------------------------------------------------------- words */
 
@@ -201,12 +213,14 @@ function write(rel, html) {
   writeFileSync(target, html);
 }
 
-function typeOf(p) {
+function typeOf(p, lang) {
+  if (sourceOf(p, lang)) return sourceOf(p, lang).filterType;
   return TYPES.includes(p.type) ? p.type : "other";
 }
 
-function originOf(p) {
-  return p.category === "imported" ? "imported" : "domestic";
+function originOf(p, lang) {
+  const src = sourceOf(p, lang);
+  return src ? src.filterOrigin : (p.category === "imported" ? "imported" : "domestic");
 }
 
 /** Search text: every name the stone has gone by, in both scripts. */
@@ -235,8 +249,8 @@ function lead(p) {
 /** A stone's name is the Latin one in both languages, as the trade writes it.
     The Persian names stay in the research and in the search, so a reader who
     types one still finds the stone, but they are not shown. */
-function nameOf(p) {
-  return plain(p.name.en);
+function nameOf(p, lang = "en") {
+  return sourceOf(p, lang)?.name || p.name.en;
 }
 
 function collator() {
@@ -428,11 +442,11 @@ function tile(page, p, { eager = false, feature = false } = {}) {
   const { lang } = page;
   const t = T[lang];
   const photo = feature ? p.photos.find((ph) => ph.kind === "quarry") || lead(p) : lead(p);
-  const meta = [t.types[typeOf(p)], p.origin?.[lang]].filter(Boolean).map(plain);
+  const meta = [typeLabel(p, lang), countryOf(p, lang)].filter(Boolean);
 
   // Where the stone is from, on the brand's tag in the corner of its
   // photograph. The quarry is a domestic one.
-  const from = `<span class="stone__tag">${t.origins[originOf(p)]}</span>`;
+  const from = `<span class="stone__tag">${esc(categoryLabel(p, lang))}</span>`;
   const picture = photo
     ? `<span class="stone__photo"><img src="${middle(page.prefix, photo)}"
                srcset="${srcset(page.prefix, photo)}"
@@ -442,14 +456,14 @@ function tile(page, p, { eager = false, feature = false } = {}) {
     : `<span class="stone__none"><span class="bk-shape bk-shape--07" aria-hidden="true"></span>${from}</span>`;
 
   return `        <li class="stone${feature ? " stone--feature" : ""}"
-            data-type="${typeOf(p)}" data-origin="${originOf(p)}" data-colours="${esc(p.colours.join(" "))}"
+            data-type="${typeOf(p, lang)}" data-origin="${originOf(p, lang)}" data-colours="${esc(coloursOf(p, lang).join(" "))}"
             data-names="${esc(searchText(p))}">
           <a class="stone__link" href="${site(page).product(p.slug)}">
             <span class="stone__frame cut place">
               ${picture}
             </span>
             <span class="stone__text reveal" style="--i:1">
-              <span class="stone__name">${esc(nameOf(p))}</span>
+              <span class="stone__name">${esc(nameOf(p, lang))}</span>
               <span class="stone__meta">${esc(meta.join(lang === "fa" ? "، " : ", "))}</span>
             </span>
           </a>
@@ -484,13 +498,15 @@ function hero(page) {
   if (!BAND.length) return "";
   const { lang, mode } = page;
   const links = site(page);
-  const slides = BAND.map((p) => ({
+  const band = BAND.filter(p => hasSource(p, lang));
+  if (!band.length) return "";
+  const slides = band.map((p) => ({
     srcset: srcset(page.prefix, p.surface),
     src: largest(page.prefix, p.surface),
-    name: nameOf(p),
+    name: nameOf(p, lang),
     href: links.product(p.slug),
   }));
-  const first = BAND[0].surface;
+  const first = band[0].surface;
   return `      <div class="hero" data-hero data-sizes="${bandSizes(mode)}"
            data-slides="${esc(JSON.stringify(slides))}">
         <div class="hero__frame" aria-hidden="true">
@@ -510,11 +526,12 @@ function listing(mode, lang) {
   const links = site(page);
   const sort = collator(lang);
   const quarry = []; // Editorial quarry content is not a commercial product card.
-  const byOrigin = (o) => listedProducts.filter((p) => p.category !== "quarry" && originOf(p) === o).sort(sort);
+  const byOrigin = (o) => productsFor(lang).filter((p) => originOf(p, lang) === o).sort(sort);
 
   let n = 0;
-  const groups = ORIGINS.map((o) => {
+  const groups = [...ORIGINS, ""].map((o) => {
     const items = [...(o === "domestic" ? quarry : []), ...byOrigin(o)];
+    if (!items.length) return "";
     const tiles = items
       .map((p) => {
         n += 1;
@@ -523,7 +540,7 @@ function listing(mode, lang) {
       .join("\n");
     return `    <section class="group" data-group="${o}" aria-labelledby="group-${o}">
       <div class="shell group__inner">
-        <h2 class="group__title headline${mode === "wide" ? " divider" : ""}" id="group-${o}"><span class="group__name">${words(t.groups[o])}</span> <span class="group__count" data-count>${num(lang, items.length)}</span></h2>
+        <h2 class="group__title headline${mode === "wide" ? " divider" : ""}" id="group-${o}"><span class="group__name">${words(t.groups[o] || (lang === "fa" ? "بدون دسته‌بندی اعلام‌شده" : "No category published"))}</span> <span class="group__count" data-count>${num(lang, items.length)}</span></h2>
         <ol class="stones" role="list">
 ${tiles}
         </ol>
@@ -585,7 +602,7 @@ ${chips("colour", COLOURS, t.colours, true)}
           </div>
 
           <div class="filters__status reveal" style="--i:4">
-            <p class="filters__count" aria-live="polite" data-total>${t.stones(listedProducts.length)}</p>
+            <p class="filters__count" aria-live="polite" data-total>${t.stones(productsFor(lang).length)}</p>
             <button class="filters__clear" type="button" data-clear hidden>${t.clear}</button>
           </div>
         </div>
@@ -629,38 +646,40 @@ function prose(text) {
 
 function specRows(lang, p) {
   const t = T[lang];
-  const rows = [[t.specType, t.types[typeOf(p)]]];
-  if (p.origin?.[lang]) rows.push([t.specOrigin, p.origin[lang]]);
-  rows.push([t.specCategory, p.category === "quarry" ? t.quarry : t.origins[originOf(p)]]);
-
-  // Anything else the site said about the stone, as it said it.
-  const known = lang === "fa" ? ["نوع", "کشور مبدا", "دسته‌بندی", "رنگ"] : ["Type", "Origin", "Category", "Colour"];
-  for (const [k, v] of Object.entries(p.specs?.[lang] || {})) {
-    if (known.includes(k) || v == null || typeof v === "object") continue;
-    rows.push([k, v]);
-  }
+  const rows = [];
+  if (typeLabel(p, lang)) rows.push([t.specType, typeLabel(p, lang)]);
+  if (countryOf(p, lang)) rows.push([t.specOrigin, countryOf(p, lang)]);
+  if (categoryLabel(p, lang)) rows.push([t.specCategory, categoryLabel(p, lang)]);
   return rows;
 }
 
 function colourRow(lang, p) {
-  const t = T[lang];
-  const said = p.specs?.[lang]?.[lang === "fa" ? "رنگ" : "Colour"];
-  const swatches = p.colours.map((c) => `<span class="swatch"><span class="pick__swatch pick__swatch--${c}" aria-hidden="true"></span>${t.colours[c]}</span>`);
-  const free = typeof said === "string" ? `<span class="spec__note">${esc(plain(said))}</span>` : "";
-  return swatches.length || free
-    ? `            <div class="spec">
-              <dt class="spec__label">${t.specColour}</dt>
-              <dd class="spec__value spec__value--swatches">${swatches.join("")}${free}</dd>
-            </div>`
-    : "";
+  const names = sourceOf(p, lang)?.colourTerms.map(t => t.name) || [];
+  if (!names.length) return "";
+  return `            <div class="spec">
+              <dt class="spec__label">${T[lang].specColour}</dt>
+              <dd class="spec__value">${esc([...new Set(names)].join(lang === "fa" ? "، " : ", "))}</dd>
+            </div>`;
+}
+function sourceInfo(lang, p) {
+  const row = sourceOf(p, lang);
+  if (!row) return "";
+  const label = lang === "fa" ? "منبع: سایت به‌کوشان" : "Source: Behkooshan website";
+  const pending = row.pageVerifiedToday ? "" : (lang === "fa"
+    ? "مبدأ از دادهٔ ثبت‌شدهٔ سایت در ۲۰۲۶/۰۹/۲۴ است؛ بازتأیید امروزِ صفحه کامل نشد."
+    : "Origin is from the recorded official page (2026-09-24); today's page recheck was incomplete.");
+  const other = hasSource(p, lang) ? "" : (lang === "fa"
+    ? "این محصول فقط در نسخهٔ انگلیسی منبع وجود دارد."
+    : "This product is available only on the Persian source site.");
+  return `<p class="source-note"><a href="${esc(row.sourceUrl)}" target="_blank" rel="noopener">${label}</a>${pending ? `<span>${pending}</span>` : ""}${other ? `<span>${other}</span>` : ""}</p>`;
 }
 
 function product(mode, lang, p) {
   const base = `${baseOf(mode, lang)}product/${p.slug}/`;
   const page = { mode, lang, prefix: upTo(base) };
   const t = T[lang];
-  const name = nameOf(p);
-  const kind = typeOf(p);
+  const name = nameOf(p, lang);
+  const kind = typeOf(p, lang);
   const links = site(page);
   const wide = mode === "wide";
 
@@ -720,11 +739,11 @@ ${t.textureMeta(texture).filter(Boolean).map((line) => `              <li>${line
     : "";
 
   // The stones of the same colour, the same kind first.
-  const colour = p.colours[0];
+  const colour = coloursOf(p, lang)[0];
   const related = colour
-    ? listedProducts
-        .filter((q) => q.slug !== p.slug && q.category !== "quarry" && q.colours[0] === colour && lead(q))
-        .sort((a, b) => (typeOf(b) === kind) - (typeOf(a) === kind) || collator(lang)(a, b))
+    ? productsFor(lang)
+        .filter((q) => q.slug !== p.slug && q.category !== "quarry" && coloursOf(q, lang)[0] === colour && lead(q))
+        .sort((a, b) => (typeOf(b, lang) === kind) - (typeOf(a, lang) === kind) || collator(lang)(a, b))
         .slice(0, 4)
     : [];
   const relatedHtml = related.length
@@ -740,7 +759,7 @@ ${related.map((q) => tile(page, q)).join("\n")}
 
   const html = `${head(page, {
     title: `${name} | ${t.title}`,
-    description: `${name}: ${[t.types[kind], p.origin?.[lang]].filter(Boolean).map(plain).join(lang === "fa" ? "، " : ", ")}.`,
+    description: `${name}: ${[typeLabel(p, lang), countryOf(p, lang)].filter(Boolean).map(plain).join(lang === "fa" ? "، " : ", ")}.`,
     preloadImage: main && { srcset: srcset(page.prefix, main), sizes: leadSizes },
   })}
 <body class="page page--stone">
@@ -764,12 +783,13 @@ ${gallery}
           <dl class="specs reveal" style="--i:2">
 ${specRows(lang, p).map(([k, v]) => `            <div class="spec">
               <dt class="spec__label">${esc(plain(k))}</dt>
-              <dd class="spec__value">${esc(plain(v))}</dd>
+              <dd class="spec__value">${esc(v)}</dd>
             </div>`).join("\n")}
 ${colourRow(lang, p)}
           </dl>
 
 ${download}
+${sourceInfo(lang, p)}
         </div>
       </div>
     </article>
