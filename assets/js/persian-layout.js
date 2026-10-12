@@ -31,12 +31,12 @@
   }
   function compose(p) {
     const state = states.get(p), style = getComputedStyle(p);
-    const width = p.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const width = p.getBoundingClientRect().width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     const signature = [width.toFixed(1), style.fontSize, style.fontFamily, style.fontWeight].join('/');
     if (width < 100 || signature === state.signature) return;
     state.signature = signature;
     p.replaceChildren(state.original.cloneNode(true));
-    p.classList.remove('fa-composed');
+    p.classList.remove('fa-composed', 'fa-native-justify');
     p.classList.add('fa-measuring');
     const nodes = textNodes(p), raw = p.textContent;
     const words = [...raw.matchAll(/\S+/gu)].map(m => ({ text: m[0], from: m.index, to: m.index + m[0].length }));
@@ -61,15 +61,29 @@
         const filled = !last && gaps > 0 && needed >= lower && needed <= upper;
         const space = filled ? needed : Math.min(target, gaps ? (width - letters) / gaps : target);
         const unused = Math.max(0, width - letters - gaps * space);
+        if (!last && !filled) continue;
         const penalty = last
-          ? ((gaps < 2 && unused > width * 0.72) ? 1.5 : 0)
+          ? 25 * Math.max(0, 0.55 - (width - unused) / width) ** 2 + ((gaps < 2) ? 4 : 0)
           : filled ? 0.15 * ((space - target) / normal) ** 2
           : 100 + 100 * (unused / width) ** 2;
         const value = penalty + cost[j + 1] + 0.015;
         if (value < cost[i]) { cost[i] = value; next[i] = { end: j + 1, space, filled, unused }; }
       }
     }
-    if (!next[0]) { p.classList.remove('fa-measuring'); return; }
+    if (!next[0]) {
+      // Never emit a short forced interior line. Let the browser justify
+      // the complete original paragraph when no all-filled bounded plan exists.
+      p.classList.remove('fa-measuring');
+      p.classList.add('fa-native-justify');
+      return;
+    }
+    const plan = [];
+    for (let at = 0; at < n; at = next[at].end) plan.push(next[at]);
+    if (plan.length > 1 && (width - plan[plan.length - 1].unused) / width < 0.5) {
+      p.classList.remove('fa-measuring');
+      p.classList.add('fa-native-justify');
+      return;
+    }
     const fragment = document.createDocumentFragment();
     fragment.append(document.createTextNode(raw.slice(0, words[0].from)));
     for (let i = 0; i < n;) {
@@ -89,6 +103,11 @@
     p.replaceChildren(fragment);
     p.classList.remove('fa-measuring');
     p.classList.add('fa-composed');
+    if ([...p.querySelectorAll(':scope > .fa-line')].some(line => line.scrollWidth > line.clientWidth + 1)) {
+      p.replaceChildren(state.original.cloneNode(true));
+      p.classList.remove('fa-composed');
+      p.classList.add('fa-native-justify');
+    }
   }
   function enqueue(p) {
     pending.add(p);
