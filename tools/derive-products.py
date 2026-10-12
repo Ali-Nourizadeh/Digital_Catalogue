@@ -37,8 +37,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent.parent
-RESEARCH = ROOT / "research" / "products"
+ROOT = Path(__file__).resolve().parent.parent / "products"
+RESEARCH = ROOT.parent / "research" / "products"
 MEDIA = ROOT / "media"
 OUT = ROOT / "data" / "products.json"
 
