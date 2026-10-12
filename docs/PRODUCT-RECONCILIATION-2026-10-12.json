@@ -1,0 +1,1134 @@
+{
+  "coverage": {
+    "fa": {
+      "apiPosts": 99,
+      "uniqueProducts": 98,
+      "visiblePagesReverified": 98
+    },
+    "en": {
+      "apiPosts": 97,
+      "uniqueProducts": 97,
+      "visiblePagesReverified": 97
+    }
+  },
+  "remaining": [],
+  "changes": [
+    {
+      "slug": "verde-atlantic",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/verde-atlantic/"
+    },
+    {
+      "slug": "verde-atlantic",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-atlantic/"
+    },
+    {
+      "slug": "belissimo-verde",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "گرانیت",
+      "official": "Granite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/belissimo-verde/"
+    },
+    {
+      "slug": "belissimo-verde",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/belissimo-verde/"
+    },
+    {
+      "slug": "belissimo-verde",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/belissimo-verde/"
+    },
+    {
+      "slug": "belissimo-verde",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/belissimo-verde/"
+    },
+    {
+      "slug": "pumpkin-viola",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/pumpkin-viola/"
+    },
+    {
+      "slug": "pumpkin-viola",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/pumpkin-viola/"
+    },
+    {
+      "slug": "pumpkin-viola",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/pumpkin-viola/"
+    },
+    {
+      "slug": "rosso-levanto",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "مرمریت",
+      "official": "Marble",
+      "sourceUrl": "https://fa.behkooshan.ir/product/rosso-levanto/"
+    },
+    {
+      "slug": "nysa",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "گرانیت",
+      "official": "Granite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/nysa/"
+    },
+    {
+      "slug": "nysa",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/nysa/"
+    },
+    {
+      "slug": "nysa",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/nysa/"
+    },
+    {
+      "slug": "nysa",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/nysa/"
+    },
+    {
+      "slug": "meteorus",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "گرانیت",
+      "official": "Granite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/meteorus/"
+    },
+    {
+      "slug": "milky-way",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "گرانیت",
+      "official": "Granite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/milky-way/"
+    },
+    {
+      "slug": "venetian-granite",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/venetian-granite/"
+    },
+    {
+      "slug": "venetian-granite",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/venetian-granite/"
+    },
+    {
+      "slug": "quartzite-levanto",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "کوارتزیت",
+      "official": "Quartzite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/quartzite-levatnto/"
+    },
+    {
+      "slug": "t-rex",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "گرانیت",
+      "official": "Granite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/t-rex-2/"
+    },
+    {
+      "slug": "t-rex",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/t-rex-2/"
+    },
+    {
+      "slug": "t-rex",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/t-rex-2/"
+    },
+    {
+      "slug": "t-rex",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/t-rex/"
+    },
+    {
+      "slug": "t-rex",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/t-rex/"
+    },
+    {
+      "slug": "dedalus",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "مرمریت",
+      "official": "Marble",
+      "sourceUrl": "https://fa.behkooshan.ir/product/dedalus/"
+    },
+    {
+      "slug": "grand-antique",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "مرمریت",
+      "official": "Marble",
+      "sourceUrl": "https://fa.behkooshan.ir/product/grand-antique/"
+    },
+    {
+      "slug": "grand-antique",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/grand-antique/"
+    },
+    {
+      "slug": "grand-antique",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/grand-antique/"
+    },
+    {
+      "slug": "elegant-brown",
+      "language": "fa",
+      "field": "typeLabel",
+      "previous": "گرانیت",
+      "official": "Granite",
+      "sourceUrl": "https://fa.behkooshan.ir/product/elegant-brown-2/"
+    },
+    {
+      "slug": "elegant-brown",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/elegant-brown-2/"
+    },
+    {
+      "slug": "elegant-brown",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/elegant-brown-2/"
+    },
+    {
+      "slug": "mozzarella",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/mozzarella/"
+    },
+    {
+      "slug": "mozzarella",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/mozzarella/"
+    },
+    {
+      "slug": "mozzarella",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/mozzarella/"
+    },
+    {
+      "slug": "purple-rain",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/purple-rain/"
+    },
+    {
+      "slug": "purple-rain",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/purple-rain/"
+    },
+    {
+      "slug": "purple-rain",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/purple-rain/"
+    },
+    {
+      "slug": "purple-rain",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/purple-rain/"
+    },
+    {
+      "slug": "kojin",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/kojin/"
+    },
+    {
+      "slug": "kojin",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/nehbandan/"
+    },
+    {
+      "slug": "kojin",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/nehbandan/"
+    },
+    {
+      "slug": "green-shadow",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/green-shadow/"
+    },
+    {
+      "slug": "green-shadow",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/green-shadow/"
+    },
+    {
+      "slug": "green-shadow",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/green-shadow/"
+    },
+    {
+      "slug": "gando",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/gando/"
+    },
+    {
+      "slug": "gando",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/gando/"
+    },
+    {
+      "slug": "gando",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/gando/"
+    },
+    {
+      "slug": "gando",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/gando/"
+    },
+    {
+      "slug": "dover-blue",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/dover-blue/"
+    },
+    {
+      "slug": "dover-blue",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/dover-blue/"
+    },
+    {
+      "slug": "black-zebra",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/black-zebra/"
+    },
+    {
+      "slug": "black-zebra",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/black-zebra/"
+    },
+    {
+      "slug": "black-zebra",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/black-zebra/"
+    },
+    {
+      "slug": "black-zebra",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/black-zebra/"
+    },
+    {
+      "slug": "verde-karzai",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/verde-karzai/"
+    },
+    {
+      "slug": "verde-karzai",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/verde-karzai/"
+    },
+    {
+      "slug": "verde-karzai",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-karzai/"
+    },
+    {
+      "slug": "verde-karzai",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-karzai/"
+    },
+    {
+      "slug": "space-gray",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/space-gray/"
+    },
+    {
+      "slug": "space-gray",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/space-gray/"
+    },
+    {
+      "slug": "space-gray",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/space-gray/"
+    },
+    {
+      "slug": "sanded-white",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/sanded-white/"
+    },
+    {
+      "slug": "sanded-white",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/sanded-white/"
+    },
+    {
+      "slug": "sanded-white",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/sanded-white/"
+    },
+    {
+      "slug": "infinity-gold",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/infinity-gold/"
+    },
+    {
+      "slug": "infinity-gold",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/infinity-gold/"
+    },
+    {
+      "slug": "infinity-gold",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/infinity-gold/"
+    },
+    {
+      "slug": "verde-imperial",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/verde-imperial/"
+    },
+    {
+      "slug": "verde-imperial",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-imperial/"
+    },
+    {
+      "slug": "verde-imperial",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-imperial/"
+    },
+    {
+      "slug": "verde-fantastic",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/verde-fantastic/"
+    },
+    {
+      "slug": "verde-fantastic",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/verde-fantastic/"
+    },
+    {
+      "slug": "verde-fantastic",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-fantastic/"
+    },
+    {
+      "slug": "verde-fantastic",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/verde-fantastic/"
+    },
+    {
+      "slug": "turquoise",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/turquoise/"
+    },
+    {
+      "slug": "turquoise",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/turquoise/"
+    },
+    {
+      "slug": "turquoise",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/turquoise/"
+    },
+    {
+      "slug": "turquoise",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/turquoise/"
+    },
+    {
+      "slug": "serpentine",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/serpentine/"
+    },
+    {
+      "slug": "serpentine",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/serpentine/"
+    },
+    {
+      "slug": "serpentine",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/serpentine/"
+    },
+    {
+      "slug": "rosso-fantastico",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/rosso-fantastico/"
+    },
+    {
+      "slug": "rosso-fantastico",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/rosso-fantastico/"
+    },
+    {
+      "slug": "rosso-fantastico",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/rosso-fantastico/"
+    },
+    {
+      "slug": "python",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/python/"
+    },
+    {
+      "slug": "python",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/python/"
+    },
+    {
+      "slug": "python",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/python/"
+    },
+    {
+      "slug": "picasso",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/picasso/"
+    },
+    {
+      "slug": "picasso",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/picasso/"
+    },
+    {
+      "slug": "picasso",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/picasso/"
+    },
+    {
+      "slug": "picasso",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/picasso/"
+    },
+    {
+      "slug": "native-black",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/native-black/"
+    },
+    {
+      "slug": "native-black",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/native-black/"
+    },
+    {
+      "slug": "native-black",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/native-black/"
+    },
+    {
+      "slug": "midnight-gray",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/midnight-gray/"
+    },
+    {
+      "slug": "midnight-gray",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/midnight-gray/"
+    },
+    {
+      "slug": "midnight-gray",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/midnight-gray/"
+    },
+    {
+      "slug": "midnight-gray",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/midnight-gray/"
+    },
+    {
+      "slug": "mercury-black",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/mercury-black/"
+    },
+    {
+      "slug": "mercury-black",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/mercury-black/"
+    },
+    {
+      "slug": "mercury-black",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/mercury-black/"
+    },
+    {
+      "slug": "mercury-black",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/mercury-black/"
+    },
+    {
+      "slug": "malibu-red",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/malibu-red/"
+    },
+    {
+      "slug": "malibu-red",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/malibu-red/"
+    },
+    {
+      "slug": "malibu-red",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/malibu-red/"
+    },
+    {
+      "slug": "jet-black",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/jet-black/"
+    },
+    {
+      "slug": "jet-black",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/jet-black/"
+    },
+    {
+      "slug": "jet-black",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/jet-black/"
+    },
+    {
+      "slug": "jasmin",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/jasmin/"
+    },
+    {
+      "slug": "jasmin",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/jasmin/"
+    },
+    {
+      "slug": "jasmin",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/jasmin/"
+    },
+    {
+      "slug": "evolution-green",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/evolution-green/"
+    },
+    {
+      "slug": "evolution-green",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/evolution-green/"
+    },
+    {
+      "slug": "evolution-green",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/evolution-green/"
+    },
+    {
+      "slug": "elegant-green",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/elegant-green/"
+    },
+    {
+      "slug": "elegant-green",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/elegant-green/"
+    },
+    {
+      "slug": "elegant-green",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/elegant-green/"
+    },
+    {
+      "slug": "elegant-green",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/elegant-green/"
+    },
+    {
+      "slug": "absolute-black",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/absolute-black/"
+    },
+    {
+      "slug": "absolute-black",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/absolute-black/"
+    },
+    {
+      "slug": "absolute-black",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/absolute-black/"
+    },
+    {
+      "slug": "absolute-black",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/absolute-black/"
+    },
+    {
+      "slug": "bubble-gray",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/bubble-gray/"
+    },
+    {
+      "slug": "bubble-gray",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/bubble-gray/"
+    },
+    {
+      "slug": "bubble-gray",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/bubble-gray/"
+    },
+    {
+      "slug": "casper",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/casper/"
+    },
+    {
+      "slug": "casper",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/casper/"
+    },
+    {
+      "slug": "casper",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/casper/"
+    },
+    {
+      "slug": "casper-line",
+      "language": "fa",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "داخلی",
+      "sourceUrl": "https://fa.behkooshan.ir/product/casper-line/"
+    },
+    {
+      "slug": "casper-line",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/casper-line/"
+    },
+    {
+      "slug": "casper-line",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/casper-line/"
+    },
+    {
+      "slug": "casper-line",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/casper-line/"
+    },
+    {
+      "slug": "dark-golden-lightning",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/dark-golden-lightning/"
+    },
+    {
+      "slug": "dark-golden-lightning",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/dark-golden-lightning/"
+    },
+    {
+      "slug": "dark-golden-lightning",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/dark-golden-lightning/"
+    },
+    {
+      "slug": "delicate",
+      "language": "fa",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://fa.behkooshan.ir/product/delicate/"
+    },
+    {
+      "slug": "delicate",
+      "language": "en",
+      "field": "categoryLabel",
+      "previous": "",
+      "official": "Domestic",
+      "sourceUrl": "https://behkooshan.ir/product/delicate/"
+    },
+    {
+      "slug": "delicate",
+      "language": "en",
+      "field": "filterOrigin",
+      "previous": "",
+      "official": "domestic",
+      "sourceUrl": "https://behkooshan.ir/product/delicate/"
+    }
+  ],
+  "fieldCounts": {
+    "filterOrigin": 77,
+    "typeLabel": 10,
+    "categoryLabel": 51
+  },
+  "changedFieldCount": 138,
+  "changedProducts": 45,
+  "sourceApiInventoriesRechecked": {
+    "faPosts": 99,
+    "enPosts": 97,
+    "idsAndFactsUnchanged": true
+  },
+  "newPageRowsVerified": 124
+}
