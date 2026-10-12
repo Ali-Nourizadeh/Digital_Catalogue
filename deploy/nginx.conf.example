@@ -1,0 +1,34 @@
+# Example for a DEDICATED host/subdomain. IT must set domain, paths and HTTPS.
+# Include in Nginx http{}; add HTTPS/redirect via your existing TLS termination.
+server {
+    listen 80;
+    server_name catalogue.example.com;
+    root /var/www/behkooshan/current/site;
+    index index.html;
+    charset utf-8;
+    server_tokens off;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+    # Never use an SPA fallback: missing pages should remain genuine 404s.
+    location / { try_files $uri $uri/ =404; }
+    location ~* \.html$ {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy strict-origin-when-cross-origin always;
+        try_files $uri =404;
+    }
+    # Assets are not fingerprinted: do NOT mark them immutable for a year.
+    location ~* \.(css|js|woff2?|webp|png|jpe?g|svg|ico)$ {
+        expires 1h;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy strict-origin-when-cross-origin always;
+        try_files $uri =404;
+    }
+    location ~ /\. { deny all; }
+    gzip on;
+    gzip_vary on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+}
+# Ensure /etc/nginx/mime.types is included by the main nginx.conf.
+# Firewall/bind this HTTP server to the company reverse proxy if TLS is upstream.

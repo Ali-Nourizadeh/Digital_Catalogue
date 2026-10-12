@@ -1,0 +1,13 @@
+# Alternative to Nginx, not an additional requirement. Replace this hostname.
+catalogue.example.com {
+    root * /var/www/behkooshan/current/site
+    encode zstd gzip
+    file_server
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Cache-Control no-cache
+    }
+}
+# Public DNS and inbound ports 80/443 must be configured for automatic TLS.
+# For an intranet, IT must use its approved internal certificate/TLS method.
