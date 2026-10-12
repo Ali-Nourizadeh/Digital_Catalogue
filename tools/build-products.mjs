@@ -37,6 +37,10 @@ const products = JSON.parse(readFileSync(join(ROOT, "data/products.json"), "utf8
    products/ folder. */
 const CATALOGUE = "../";
 
+// Official inventory allowlist; preserve research/detail routes, hide unlisted cards.
+const allowed = new Set(JSON.parse(readFileSync(join(ROOT, "data/availability.json"), "utf8")).allowedSlugs);
+const listedProducts = products.filter(p => p.category !== "quarry" && allowed.has(p.slug));
+
 /* --------------------------------------------------------------- words */
 
 const T = {
@@ -464,7 +468,7 @@ function chips(group, values, labels, withSwatch = false) {
     .join("\n");
 }
 
-const BAND = products.filter((p) => p.surface).sort((a, b) => a.surface.order - b.surface.order);
+const BAND = listedProducts.filter((p) => p.surface).sort((a, b) => a.surface.order - b.surface.order);
 /* The band runs from edge to edge of the window upright and on a card, and
    takes the first half and more of a spread sideways (products-wide.css). */
 const bandSizes = (mode) => (mode === "wide" ? "(min-width: 60rem) and (min-height: 38rem) 56vw, 100vw" : "100vw");
@@ -505,8 +509,8 @@ function listing(mode, lang) {
   const t = T[lang];
   const links = site(page);
   const sort = collator(lang);
-  const quarry = products.filter((p) => p.category === "quarry");
-  const byOrigin = (o) => products.filter((p) => p.category !== "quarry" && originOf(p) === o).sort(sort);
+  const quarry = []; // Editorial quarry content is not a commercial product card.
+  const byOrigin = (o) => listedProducts.filter((p) => p.category !== "quarry" && originOf(p) === o).sort(sort);
 
   let n = 0;
   const groups = ORIGINS.map((o) => {
@@ -581,7 +585,7 @@ ${chips("colour", COLOURS, t.colours, true)}
           </div>
 
           <div class="filters__status reveal" style="--i:4">
-            <p class="filters__count" aria-live="polite" data-total>${t.stones(products.length)}</p>
+            <p class="filters__count" aria-live="polite" data-total>${t.stones(listedProducts.length)}</p>
             <button class="filters__clear" type="button" data-clear hidden>${t.clear}</button>
           </div>
         </div>
@@ -718,7 +722,7 @@ ${t.textureMeta(texture).filter(Boolean).map((line) => `              <li>${line
   // The stones of the same colour, the same kind first.
   const colour = p.colours[0];
   const related = colour
-    ? products
+    ? listedProducts
         .filter((q) => q.slug !== p.slug && q.category !== "quarry" && q.colours[0] === colour && lead(q))
         .sort((a, b) => (typeOf(b) === kind) - (typeOf(a) === kind) || collator(lang)(a, b))
         .slice(0, 4)
@@ -797,4 +801,4 @@ for (const mode of ["flow", "wide"]) {
   }
 }
 
-console.log(`${products.length} stones, ${pages} pages`);
+console.log(`${listedProducts.length} listed products, ${products.length} detail entries, ${pages} pages`);
