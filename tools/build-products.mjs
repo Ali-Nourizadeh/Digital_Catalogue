@@ -46,7 +46,8 @@ function sourceOf(p, lang) {
   const record = official.items[p.slug]?.languages;
   return record?.[lang] || record?.[lang === "fa" ? "en" : "fa"] || null;
 }
-function productsFor(lang) { return listedProducts.filter(p => hasSource(p, lang)); }
+// Both catalogue languages show the same verified union of 99 products.
+function productsFor(lang) { return listedProducts.filter(p => sourceOf(p, lang)); }
 function typeLabel(p, lang) { const src = sourceOf(p, lang); return src ? src.typeLabel : p.type_label?.[lang] || ""; }
 function countryOf(p, lang) { const src = sourceOf(p, lang); return src ? src.originLabel : p.origin?.[lang] || ""; }
 function categoryLabel(p, lang) { const src = sourceOf(p, lang); return src ? src.categoryLabel : T[lang].quarry; }
@@ -661,18 +662,6 @@ function colourRow(lang, p) {
               <dd class="spec__value">${esc([...new Set(names)].join(lang === "fa" ? "، " : ", "))}</dd>
             </div>`;
 }
-function sourceInfo(lang, p) {
-  const row = sourceOf(p, lang);
-  if (!row) return "";
-  const label = lang === "fa" ? "منبع: سایت به‌کوشان" : "Source: Behkooshan website";
-  const pending = row.pageVerifiedToday ? "" : (lang === "fa"
-    ? "مبدأ از دادهٔ ثبت‌شدهٔ سایت در ۲۰۲۶/۰۹/۲۴ است؛ بازتأیید امروزِ صفحه کامل نشد."
-    : "Origin is from the recorded official page (2026-09-24); today's page recheck was incomplete.");
-  const other = hasSource(p, lang) ? "" : (lang === "fa"
-    ? "این محصول فقط در نسخهٔ انگلیسی منبع وجود دارد."
-    : "This product is available only on the Persian source site.");
-  return `<p class="source-note"><a href="${esc(row.sourceUrl)}" target="_blank" rel="noopener">${label}</a>${pending ? `<span>${pending}</span>` : ""}${other ? `<span>${other}</span>` : ""}</p>`;
-}
 
 function product(mode, lang, p) {
   const base = `${baseOf(mode, lang)}product/${p.slug}/`;
@@ -789,7 +778,6 @@ ${colourRow(lang, p)}
           </dl>
 
 ${download}
-${sourceInfo(lang, p)}
         </div>
       </div>
     </article>
