@@ -2281,3 +2281,35 @@ html[lang="fa"] .card__name {
   unicode-bidi: isolate;
   text-align: right;
 }
+
+/* Compact toolbar controls. Touch targets retain their full height on
+   coarse pointers; desktop controls need not look like mobile buttons. */
+.bar .chip {
+  min-block-size: 2rem;
+  padding-block: 0.375rem;
+  line-height: 1.25;
+}
+@media (pointer: coarse) {
+  .bar .chip { min-block-size: 2.75rem; }
+}
+
+/* Match the compact toolbar in the filter rows, including their legends. */
+.pick,
+.facet .filters__label { min-block-size: 2rem; }
+.pick { padding-block: 0.375rem; line-height: 1.25; }
+@media (pointer: coarse) {
+  .pick,
+  .facet .filters__label { min-block-size: 2.75rem; }
+}
+
+/* Natural RTL spacing, without inter-word justification or letter tracking. */
+html[lang="fa"] .about__text p {
+  text-align: start;
+  text-align-last: start;
+  text-justify: none;
+  text-wrap: pretty;
+  letter-spacing: 0;
+  word-spacing: normal;
+  line-height: 1.55;
+  hyphens: none;
+}

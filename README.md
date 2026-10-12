@@ -82,8 +82,9 @@ What the derivation decides, and why, is written at the top of
   (Jeriba Blue is found among the blue stones). Where the site named a colour,
   the site's word stands. `colour_source` in each record says which.
 
-A stone the research knows only by name (no photograph, type or origin) is
-left out of the site until it has something to show. Black Tempest is the one.
+The live-site sync completed Black Tempest, and it is included. The catalogue
+contains 99 distinct products plus the quarry entry. The current inventory
+check and its limitations are in [research/products/AUDIT-2026-10-12.md](research/products/AUDIT-2026-10-12.md).
 
 ## Publishing
 

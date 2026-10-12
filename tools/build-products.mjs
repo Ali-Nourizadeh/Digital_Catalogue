@@ -26,11 +26,9 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-/* A stone is listed once the research knows where it is from, because
-   every tile says so on its tag and a guess there would be a claim the
-   site never made. Black Tempest is the one left out: its page was never
-   archived, and the photographs of it in use that the live site has since
-   given say nothing of its type or origin. It stays in the research. */
+/* Render only records with a researched category. Black Tempest is included:
+   the live-site sync completed its specifications and photos. See
+   research/products/LIVE-SYNC.md and AUDIT-2026-10-12.md. */
 const products = JSON.parse(readFileSync(join(ROOT, "data/products.json"), "utf8"))
   .filter((p) => p.category);
 
