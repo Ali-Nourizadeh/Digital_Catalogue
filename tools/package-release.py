@@ -109,9 +109,12 @@ shutil.copytree(ROOT / 'deploy', out / 'deploy',
     ignore=shutil.ignore_patterns('README.release.fa.md'))
 shutil.copy2(ROOT / 'deploy/README.release.fa.md', out / 'README.md')
 (out / 'docs').mkdir()
-shutil.copy2(ROOT / 'docs/IT-HANDOFF.fa.md', out / 'docs/IT-HANDOFF.fa.md')
+shutil.copy2(ROOT / 'docs/IT-HANDOFF.fa.md', out / 'docs/DEPLOYMENT.fa.md')
 shutil.copy2(ROOT / 'LICENSE', out / 'LICENSE')
-manifest = {'release_name': 'release', 'includes_source_archive': False, 'created_utc': datetime.now(timezone.utc).isoformat(),
+shutil.copy2(ROOT / 'THIRD-PARTY-NOTICES.md', out / 'THIRD-PARTY-NOTICES.md')
+manifest = {'release_name': 'release', 'deployment_mode': 'single_static_site',
+    'document_root': 'site/', 'entry_points': {'catalogue': '/', 'products': '/products/'},
+    'project_license': 'All rights reserved', 'includes_source_archive': False, 'created_utc': datetime.now(timezone.utc).isoformat(),
     'source_revision': revision, 'working_tree_modified': False,
     'html_pages': html_pages, 'listing_counts': counts, 'local_link_errors': 0,
     'font_license_notice': 'TT Firs Neue is documented as Trial; commercial web licensing must be resolved before public company deployment.',

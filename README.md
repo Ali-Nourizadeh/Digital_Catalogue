@@ -36,7 +36,7 @@ node tools/build-products.mjs
 python3 tools/package-release.py --output ../release
 ```
 
-The output is `release.zip`, containing one `release/` folder with `site/`, server examples, a simple Persian `README.md`, version manifest and checksums. No source archive, raw build data or build tools are bundled. Only `release/site/` is the web document root. The source and handoff documents must stay outside it. Use a fresh output parent if a previous `release.zip` exists. See `deploy/README.release.fa.md` for the delivered README and its font-license warning.
+The output is `release.zip`, containing one `release/` folder with `site/`, server examples, a simple Persian `README.md`, version manifest and checksums. No source archive, raw build data or build tools are bundled. Catalogue and products deploy together as one static site: `/` and `/products/`. Only `release/site/` is the web document root. The source and handoff documents must stay outside it. Use a fresh output parent if a previous `release.zip` exists. See `deploy/README.release.fa.md` for the delivered README and its font-license warning.
 
 ## Publication
 
@@ -65,3 +65,7 @@ Persian prose uses font-measured, bounded two-sided paragraph composition with z
 All 98 Persian and 97 English product records have current visible-page Type/Origin verification (2026-10-12). Breadcrumb categories fill only genuinely absent API membership; no origin/photo inference. Evidence hashes and source URLs are in `products/data/official-source.json`; field-level changes and scope limits are in `docs/OFFICIAL-SOURCE-SYNC.fa.md` and `docs/PRODUCT-RECONCILIATION-2026-10-12.csv`.
 
 Catalogue display policy: both languages and orientations show the same verified union of 99 stones. Official per-language inventories remain FA98/EN97 in provenance data; no public source-note labels are displayed.
+
+## Rights and third-party assets
+
+All rights reserved for the original code and documentation in this version. Third-party licenses and rights remain independent; see `LICENSE` and `THIRD-PARTY-NOTICES.md`. Validly granted rights under earlier versions are unaffected. The Trial TT Firs Neue font requires a commercial web license and authorized files, or a licensed replacement, before public company deployment.
