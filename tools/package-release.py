@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create release.zip: static site, archived source and simple deployment docs."""
+"""Create release.zip: deployable static site and simple deployment docs, without source archive."""
 import argparse
 import hashlib
 import json
@@ -111,7 +111,7 @@ shutil.copy2(ROOT / 'deploy/README.release.fa.md', out / 'README.md')
 (out / 'docs').mkdir()
 shutil.copy2(ROOT / 'docs/IT-HANDOFF.fa.md', out / 'docs/IT-HANDOFF.fa.md')
 shutil.copy2(ROOT / 'LICENSE', out / 'LICENSE')
-manifest = {'release_name': 'release', 'created_utc': datetime.now(timezone.utc).isoformat(),
+manifest = {'release_name': 'release', 'includes_source_archive': False, 'created_utc': datetime.now(timezone.utc).isoformat(),
     'source_revision': revision, 'working_tree_modified': False,
     'html_pages': html_pages, 'listing_counts': counts, 'local_link_errors': 0,
     'font_license_notice': 'TT Firs Neue is documented as Trial; commercial web licensing must be resolved before public company deployment.',
@@ -119,26 +119,15 @@ manifest = {'release_name': 'release', 'created_utc': datetime.now(timezone.utc)
               for f in sorted(site.rglob('*')) if f.is_file()}}
 (out / 'release-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
-(out / 'source').mkdir()
-source_zip = out / 'source/source.zip'
-with zipfile.ZipFile(source_zip, 'w', zipfile.ZIP_DEFLATED) as z:
-    for name in sorted(tracked):
-        if name and (ROOT / name).is_file():
-            z.write(ROOT / name, 'Digital_Catalogue/' + name)
-    exported = {'source_revision': revision,
-                'files': {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
-                          for name in sorted(tracked) if (ROOT / name).is_file()}}
-    z.writestr('Digital_Catalogue/SOURCE-MANIFEST.json', json.dumps(exported, indent=2) + '\n')
-# Hash every delivered file, including the source, README and server samples.
+# Hash every delivered file, including the README and server samples.
 checksums = ''.join(hashlib.sha256(f.read_bytes()).hexdigest() + '  ' + str(f.relative_to(out)) + '\n'
                     for f in sorted(out.rglob('*')) if f.is_file())
 (out / 'SHA256SUMS.txt').write_text(checksums)
-# One clearly named folder when unzipped. Do not recompress the source ZIP.
+# One clearly named folder when unzipped; no source tree or source ZIP is included.
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as z:
     for file in sorted(out.rglob('*')):
         if file.is_file():
-            z.write(file, 'release/' + str(file.relative_to(out)),
-                    compress_type=zipfile.ZIP_STORED if file == source_zip else zipfile.ZIP_DEFLATED)
+            z.write(file, 'release/' + str(file.relative_to(out)))
 archive.with_suffix('.zip.sha256').write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + '  release.zip\n')
 print(json.dumps({'release_zip': str(archive), 'source_revision': revision,
     'html_pages': html_pages, 'local_link_errors': 0, 'listing_counts': counts,

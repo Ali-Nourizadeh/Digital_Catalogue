@@ -36,7 +36,7 @@ node tools/build-products.mjs
 python3 tools/package-release.py --output ../release
 ```
 
-The output is `release.zip`, containing one `release/` folder with `site/`, archived source, server examples, a simple Persian `README.md`, version manifest and checksums. Only `release/site/` is the web document root. The source and handoff documents must stay outside it. Use a fresh output parent if a previous `release.zip` exists. See `deploy/README.release.fa.md` for the delivered README and its font-license warning.
+The output is `release.zip`, containing one `release/` folder with `site/`, server examples, a simple Persian `README.md`, version manifest and checksums. No source archive, raw build data or build tools are bundled. Only `release/site/` is the web document root. The source and handoff documents must stay outside it. Use a fresh output parent if a previous `release.zip` exists. See `deploy/README.release.fa.md` for the delivered README and its font-license warning.
 
 ## Publication
 
