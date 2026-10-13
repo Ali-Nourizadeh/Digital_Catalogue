@@ -8,9 +8,9 @@
 
 ## محتویات تحویل
 
-- ZIP انتشار: پوشه `site/` به همراه این راهنما، نمونه تنظیمات `deploy/`، مجوز و `release-manifest.json`.
-- `source.zip`: سورس کامل، داده‌ها، قالب‌ها، ابزار ساخت و آرشیو مرجع؛ فقط برای نگهداری و توسعه، نه برای قرار دادن در document root.
-- فایل SHA-256 برای هر ZIP؛ هش با فایل دریافت‌شده مقایسه شود.
+- `release.zip`: یک پوشهٔ `release/` با سایت، README ساده، سورس آرشیوشده، راهنمای فنی، نمونه تنظیمات وب‌سرور، مجوز، شناسهٔ نسخه و هش فایل‌ها.
+- `release/source/source.zip`: سورس کامل، داده‌ها، قالب‌ها، ابزار ساخت و آرشیو مرجع؛ فقط برای نگهداری و توسعه، نه برای قرار دادن در document root.
+- `release.zip.sha256` در کنار ZIP برای بررسی دانلود؛ داخل `release/` نیز `SHA256SUMS.txt` برای بررسی همهٔ فایل‌ها موجود است.
 - `release-manifest.json`: شناسه کامیت، وضعیت تغییرات محلی، تعداد صفحات، تعداد محصولات هر زبان/نما و هش فایل‌های سایت.
 
 **فقط محتویات `site/` منتشر شود.** پوشه‌های داده، پژوهش، `.git`، ابزارهای ساخت و سورس نباید از وب قابل دانلود باشند. `products/research/` داخل `site/` عمداً باقی می‌ماند؛ فایل دانلود بافت محصولات از آن استفاده می‌کند.
@@ -22,10 +22,10 @@
 ```bash
 node tools/build-catalogue.mjs
 node tools/build-products.mjs
-python3 tools/package-release.py --output ../catalogue-release-YYYYMMDD
+python3 tools/package-release.py --output ../release
 ```
 
-مسیر خروجی باید تازه و خارج از ریپو باشد. اسکریپت در صورت لینک محلی خراب یا تعداد محصول غیر از ۹۹، تحویل را متوقف می‌کند. نسخه‌های HTML تولیدشده در سورس وجود دارند؛ IT برای انتشار ZIP نیازی به اجرای این دستورها ندارد. تغییر رسانه اصلی و تولید مجدد تصاویر فرایند جداگانه‌ای دارد؛ راهنمای README و ابزارهای derive مربوطه بررسی شوند.
+مسیر خروجی باید تازه و خارج از ریپو باشد؛ پوشه یا `release.zip` قبلی را بازنویسی نمی‌کند. اسکریپت در صورت لینک محلی خراب یا تعداد محصول غیر از ۹۹، تحویل را متوقف می‌کند. نسخه‌های HTML تولیدشده در سورس وجود دارند؛ IT برای انتشار ZIP نیازی به اجرای این دستورها ندارد. تغییر رسانه اصلی و تولید مجدد تصاویر فرایند جداگانه‌ای دارد؛ راهنمای README و ابزارهای derive مربوطه بررسی شوند.
 
 ## نصب پیشنهادی روی Linux/Nginx
 
@@ -34,11 +34,11 @@ IT دامنه، دسترسی شبکه (عمومی یا داخلی)، مسیر ن
 ```bash
 # فرمان‌های ادمین؛ فقط توسط IT و پس از جایگزینی نام نسخه و دامنه اجرا شود.
 sudo mkdir -p /var/www/behkooshan/releases/RELEASE_ID
-sudo unzip catalogue-release.zip -d /var/www/behkooshan/releases/RELEASE_ID
+sudo unzip release.zip -d /var/www/behkooshan/releases/RELEASE_ID
 sudo find /var/www/behkooshan/releases/RELEASE_ID -type d -exec chmod 755 {} \;
 sudo find /var/www/behkooshan/releases/RELEASE_ID -type f -exec chmod 644 {} \;
 # قبل از تغییر current، نسخه قبلی را ثبت و نگه دارید.
-sudo ln -s /var/www/behkooshan/releases/RELEASE_ID /var/www/behkooshan/current.next
+sudo ln -s /var/www/behkooshan/releases/RELEASE_ID/release /var/www/behkooshan/current.next
 sudo mv -Tf /var/www/behkooshan/current.next /var/www/behkooshan/current
 ```
 
