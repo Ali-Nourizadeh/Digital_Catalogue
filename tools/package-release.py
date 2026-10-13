@@ -1,82 +1,145 @@
 #!/usr/bin/env python3
-"""Build and audit a static IT handoff; Python 3 only, no external libraries."""
-import argparse, hashlib, json, re, shutil, subprocess, zipfile
+"""Create release.zip: static site, archived source and simple deployment docs."""
+import argparse
+import hashlib
+import json
+import re
+import shutil
+import subprocess
+import zipfile
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+
 ROOT = Path(__file__).resolve().parents[1]
-p = argparse.ArgumentParser()
-p.add_argument('--output', type=Path, default=ROOT.parent / 'catalogue-handoff')
-a = p.parse_args()
-out = a.output.resolve()
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--output', type=Path, default=ROOT.parent / 'release')
+args = parser.parse_args()
+out = args.output.resolve()
+archive = out.parent / 'release.zip'
 if out == ROOT or ROOT in out.parents or out in ROOT.parents:
     raise SystemExit('Output must be outside the repository.')
-if out.exists():
-    raise SystemExit('Output already exists; choose a fresh directory.')
+if out.exists() or archive.exists():
+    raise SystemExit('Output or release.zip already exists; use a fresh parent directory.')
+# Use either a clean Git checkout or a verified source archive (which has no .git).
+try:
+    git_root = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=ROOT,
+                              capture_output=True, text=True)
+    is_repo = git_root.returncode == 0 and Path(git_root.stdout.strip()).resolve() == ROOT
+except FileNotFoundError:
+    is_repo = False
+if is_repo:
+    if subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip():
+        raise SystemExit('Commit or resolve local changes before packaging a release.')
+    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
+    tracked = [name for name in tracked if name]
+else:
+    source_manifest = ROOT / 'SOURCE-MANIFEST.json'
+    if not source_manifest.is_file():
+        raise SystemExit('Use a clean Git checkout or the supplied verified source archive.')
+    exported = json.loads(source_manifest.read_text())
+    revision = exported['source_revision']
+    tracked = list(exported['files'])
+    for name, expected in exported['files'].items():
+        file = ROOT / name
+        if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != expected:
+            raise SystemExit('Source was changed; initialize Git and commit the updated source before packaging.')
 site = out / 'site'
 site.mkdir(parents=True)
-# Only the active routes and assets; exclude obsolete root-level product copies.
 for directory in ['assets', 'media', 'products']:
     shutil.copytree(ROOT / directory, site / directory,
         ignore=shutil.ignore_patterns('data', 'README.md', 'LICENSE', '__pycache__'))
 for name in ['index.html', 'en/index.html', 'wide/index.html', 'wide/en/index.html', '.nojekyll']:
-    dest = site / name
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(ROOT / name, dest)
+    target = site / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ROOT / name, target)
+
 class Links(HTMLParser):
     def __init__(self):
-        super().__init__(); self.links = []
+        super().__init__()
+        self.links = []
     def handle_starttag(self, tag, attrs):
-        for key, val in attrs:
-            if not val: continue
-            if key in ['src', 'href', 'poster']: self.links.append(val)
-            elif key == 'srcset': self.links.extend(part.strip().split()[0] for part in val.split(',') if part.strip())
+        for key, value in attrs:
+            if not value:
+                continue
+            if key in ['src', 'href', 'poster']:
+                self.links.append(value)
+            elif key == 'srcset':
+                self.links.extend(item.strip().split()[0] for item in value.split(',') if item.strip())
+
+broken = []
 def check_link(file, value):
     url = urlsplit(value)
-    if url.scheme or url.netloc or not url.path: return
-    target = site / unquote(url.path).lstrip('/') if url.path.startswith('/') else file.parent / unquote(url.path)
-    target = target.resolve()
-    if target.is_dir(): target = target / 'index.html'
-    if not target.is_file(): broken.append({'file': str(file.relative_to(site)), 'target': value})
-broken = []
-html_count = 0
+    if url.scheme or url.netloc or not url.path:
+        return
+    target = (site / unquote(url.path).lstrip('/') if url.path.startswith('/')
+              else file.parent / unquote(url.path)).resolve()
+    if site.resolve() not in target.parents and target != site.resolve():
+        broken.append({'file': str(file.relative_to(site)), 'target': value, 'error': 'outside site'})
+        return
+    if target.is_dir():
+        target = target / 'index.html'
+    if not target.is_file():
+        broken.append({'file': str(file.relative_to(site)), 'target': value})
+
+html_pages = 0
 for file in site.rglob('*'):
     if file.suffix == '.html':
-        html_count += 1
-        parser = Links(); parser.feed(file.read_text())
-        for link in parser.links: check_link(file, link)
+        html_pages += 1
+        links = Links()
+        links.feed(file.read_text())
+        for link in links.links:
+            check_link(file, link)
     elif file.suffix == '.css':
-        for link in re.findall(r'url\(\s*[\'"]?([^\'"\)\s]+)', file.read_text()): check_link(file, link)
-# Current listing routes must all contain exactly 99 stone tiles.
+        for link in re.findall(r'url\(\s*[\'"]?([^\'"\)\s]+)', file.read_text()):
+            check_link(file, link)
+    elif file.suffix == '.js':
+        for link in re.findall(r'import\(\s*[\'"]([^\'"]+)[\'"]\s*\)', file.read_text()):
+            check_link(file, link)
 counts = {}
 for route in ['products/index.html', 'products/en/index.html', 'products/wide/index.html', 'products/wide/en/index.html']:
     counts[route] = len(re.findall(r'<li\b[^>]*\bclass="stone(?:\s|\")', (site / route).read_text()))
 if broken or set(counts.values()) != {99}:
     print(json.dumps({'broken': broken[:30], 'counts': counts}, ensure_ascii=False, indent=2))
     raise SystemExit('Release audit failed; do not deploy.')
-revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-dirty = bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip())
-manifest = {'created_utc': datetime.now(timezone.utc).isoformat(), 'source_revision': revision,
-    'working_tree_modified': dirty, 'html_pages': html_count, 'listing_counts': counts,
-    'local_link_errors': 0, 'files': {str(f.relative_to(site)): hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(site.rglob('*')) if f.is_file()}}
-(out / 'release-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-shutil.copytree(ROOT / 'deploy', out / 'deploy')
-shutil.copy2(ROOT / 'docs/IT-HANDOFF.fa.md', out / 'IT-HANDOFF.fa.md')
+
+shutil.copytree(ROOT / 'deploy', out / 'deploy',
+    ignore=shutil.ignore_patterns('README.release.fa.md'))
+shutil.copy2(ROOT / 'deploy/README.release.fa.md', out / 'README.md')
+(out / 'docs').mkdir()
+shutil.copy2(ROOT / 'docs/IT-HANDOFF.fa.md', out / 'docs/IT-HANDOFF.fa.md')
 shutil.copy2(ROOT / 'LICENSE', out / 'LICENSE')
-# Separate source archive: IT publishes site/, never this archive or raw research.
-tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
-# Include newly added handoff/build/test files before first commit as well.
-tracked += [str(f.relative_to(ROOT)) for base in ['deploy', 'tests'] for f in (ROOT / base).rglob('*') if f.is_file()]
-tracked += ['tools/package-release.py', 'docs/IT-HANDOFF.fa.md']
-source_zip = out / 'source.zip'
+manifest = {'release_name': 'release', 'created_utc': datetime.now(timezone.utc).isoformat(),
+    'source_revision': revision, 'working_tree_modified': False,
+    'html_pages': html_pages, 'listing_counts': counts, 'local_link_errors': 0,
+    'font_license_notice': 'TT Firs Neue is documented as Trial; commercial web licensing must be resolved before public company deployment.',
+    'files': {str(f.relative_to(site)): hashlib.sha256(f.read_bytes()).hexdigest()
+              for f in sorted(site.rglob('*')) if f.is_file()}}
+(out / 'release-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+
+(out / 'source').mkdir()
+source_zip = out / 'source/source.zip'
 with zipfile.ZipFile(source_zip, 'w', zipfile.ZIP_DEFLATED) as z:
-    for name in sorted(set(tracked)):
-        if name and (ROOT / name).is_file(): z.write(ROOT / name, 'Digital_Catalogue/' + name)
-with zipfile.ZipFile(out.with_suffix('.zip'), 'w', zipfile.ZIP_DEFLATED) as z:
+    for name in sorted(tracked):
+        if name and (ROOT / name).is_file():
+            z.write(ROOT / name, 'Digital_Catalogue/' + name)
+    exported = {'source_revision': revision,
+                'files': {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
+                          for name in sorted(tracked) if (ROOT / name).is_file()}}
+    z.writestr('Digital_Catalogue/SOURCE-MANIFEST.json', json.dumps(exported, indent=2) + '\n')
+# Hash every delivered file, including the source, README and server samples.
+checksums = ''.join(hashlib.sha256(f.read_bytes()).hexdigest() + '  ' + str(f.relative_to(out)) + '\n'
+                    for f in sorted(out.rglob('*')) if f.is_file())
+(out / 'SHA256SUMS.txt').write_text(checksums)
+# One clearly named folder when unzipped. Do not recompress the source ZIP.
+with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as z:
     for file in sorted(out.rglob('*')):
-        if file.is_file() and file != source_zip: z.write(file, str(file.relative_to(out)))
-for file in [out.with_suffix('.zip'), source_zip]:
-    file.with_suffix(file.suffix + '.sha256').write_text(hashlib.sha256(file.read_bytes()).hexdigest() + '  ' + file.name + '\n')
-print(json.dumps({'runtime_zip': str(out.with_suffix('.zip')), 'source_zip': str(source_zip), 'html_pages': html_count,
-    'local_link_errors': 0, 'counts': counts, 'runtime_mb': round(out.with_suffix('.zip').stat().st_size / 1048576, 1)}, ensure_ascii=False))
+        if file.is_file():
+            z.write(file, 'release/' + str(file.relative_to(out)),
+                    compress_type=zipfile.ZIP_STORED if file == source_zip else zipfile.ZIP_DEFLATED)
+archive.with_suffix('.zip.sha256').write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + '  release.zip\n')
+print(json.dumps({'release_zip': str(archive), 'source_revision': revision,
+    'html_pages': html_pages, 'local_link_errors': 0, 'listing_counts': counts,
+    'size_mb': round(archive.stat().st_size / 1048576, 1)}, ensure_ascii=False))

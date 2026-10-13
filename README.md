@@ -26,6 +26,18 @@ When original product research changes, run `python3 tools/derive-products.py` b
 
 Generated HTML is committed. Edit data/templates rather than generated pages. No runtime framework is needed.
 
+## Company handoff: release
+
+From a clean, committed checkout, build and package the current version:
+
+```
+node tools/build-catalogue.mjs
+node tools/build-products.mjs
+python3 tools/package-release.py --output ../release
+```
+
+The output is `release.zip`, containing one `release/` folder with `site/`, archived source, server examples, a simple Persian `README.md`, version manifest and checksums. Only `release/site/` is the web document root. The source and handoff documents must stay outside it. Use a fresh output parent if a previous `release.zip` exists. See `deploy/README.release.fa.md` for the delivered README and its font-license warning.
+
 ## Publication
 
 **Migration status:** site content and both builds are consolidated on main, but changing GitHub workflow files was denied by the current token. Pages currently still deploys from Behkooshan-catalogue, and its published CSS has been updated and verified. Workflows write permission is needed to switch deploy-pages.yml to main and retire the product-copy workflow. Do not delete those historical source branches until this transition succeeds.
