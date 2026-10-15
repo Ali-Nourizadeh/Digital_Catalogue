@@ -2290,15 +2290,24 @@ html[lang="fa"] .card__name {
   text-align: right;
 }
 
-/* Compact toolbar controls. Touch targets retain their full height on
-   coarse pointers; desktop controls need not look like mobile buttons. */
+/* One compact toolbar face and hit area on every pointer type.
+   Browser tap highlights ignore the brand notch, so draw press feedback
+   on the clipped button itself, not as the native blue touch overlay. */
 .bar .chip {
   min-block-size: 2rem;
   padding-block: 0.375rem;
   line-height: 1.25;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
-@media (pointer: coarse) {
-  .bar .chip { min-block-size: 2.75rem; }
+.bar .chip:active {
+  background-color: var(--print-green);
+  color: var(--paper);
+  transform: none;
+}
+.bar .chip:active::before {
+  background-color: var(--print-green);
 }
 
 /* Match the compact toolbar in the filter rows, including their legends. */
@@ -2344,30 +2353,9 @@ html[lang="en"] .bar .chip,
   transform: translateY(var(--hairline));
 }
 
-/* A 32 px visible face within a real 44 px touch target, not a tiny mobile
-   control. Pseudo layers keep the same brand cut corner and focus stroke. */
+/* Filter choices retain their spaced touch targets. Header controls use their
+   actual 32 px clipped faces instead of an invisible 44 px wrapper. */
 @media (pointer: coarse) {
-  .bar .chip {
-    min-block-size: 2.75rem;
-    clip-path: none;
-    background-color: transparent;
-  }
-  .bar .chip::after {
-    content: "";
-    position: absolute;
-    inset: 0.375rem 0;
-    z-index: -2;
-    background: var(--rule-strong);
-    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
-  }
-  html[dir="rtl"] .bar .chip::after {
-    clip-path: polygon(var(--notch) 0, 100% 0, 100% 100%, 0 100%, 0 var(--notch));
-  }
-  .bar .chip::before {
-    inset-block: calc(0.375rem + var(--stroke));
-  }
-  .bar .chip:hover, .bar .chip:focus-visible { background-color: transparent; }
-  .bar .chip:hover::after, .bar .chip:focus-visible::after { background: var(--print-green); }
   .pick {
     position: relative;
     isolation: isolate;

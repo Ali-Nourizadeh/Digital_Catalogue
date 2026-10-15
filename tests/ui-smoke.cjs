@@ -57,7 +57,7 @@ const cp=require('node:child_process');
    assert.equal(await page.locator('.mobile-back').isVisible(),mobile);
    if(mobile){
     const style=await page.locator('.mobile-back').evaluate(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return{x:r.x,y:r.y,w:r.width,h:r.height,radius:s.borderRadius,shadow:s.boxShadow,colour:s.color,header:getComputedStyle(document.querySelector('.bar .chip:not(.mobile-back)')).color};});
-    assert.ok(style.x<40&&style.y<25&&style.w>=44&&style.h>=44,JSON.stringify(style));
+    assert.ok(style.x<40&&style.y<25&&style.w>=44&&style.h>=32&&style.h<33,JSON.stringify(style));
     assert.equal(style.radius,'0px');assert.equal(style.shadow,'none');assert.equal(style.colour,style.header);
     const overlap=await page.locator('.mobile-back').evaluate(e=>{const b=e.getBoundingClientRect();return Array.from(document.querySelectorAll('.bar__logo,.bar__end')).some(n=>{const r=n.getBoundingClientRect();return Math.min(r.right,b.right)-Math.max(r.left,b.left)>1&&Math.min(r.bottom,b.bottom)-Math.max(r.top,b.top)>1;});});
     assert.equal(overlap,false,'back must not cover toolbar');

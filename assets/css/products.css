@@ -2282,15 +2282,24 @@ html[lang="fa"] .card__name {
   text-align: right;
 }
 
-/* Compact toolbar controls. Touch targets retain their full height on
-   coarse pointers; desktop controls need not look like mobile buttons. */
+/* One compact toolbar face and hit area on every pointer type.
+   Browser tap highlights ignore the brand notch, so draw press feedback
+   on the clipped button itself, not as the native blue touch overlay. */
 .bar .chip {
   min-block-size: 2rem;
   padding-block: 0.375rem;
   line-height: 1.25;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
-@media (pointer: coarse) {
-  .bar .chip { min-block-size: 2.75rem; }
+.bar .chip:active {
+  background-color: var(--print-green);
+  color: var(--paper);
+  transform: none;
+}
+.bar .chip:active::before {
+  background-color: var(--print-green);
 }
 
 /* Match the compact toolbar in the filter rows, including their legends. */
